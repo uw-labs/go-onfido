@@ -1,0 +1,32 @@
+version: 2
+
+shared: &shared
+  working_directory: /go/src/github.com/utilitywarehouse/go-onfido
+  steps:
+    - checkout
+    - run: go get -v -t -d -tags integration ./...
+    - run: go test -v -race -tags integration -onfidoToken=${ONFIDO_TOKEN}
+
+jobs:
+  "golang-1.9":
+    <<: *shared
+    docker:
+      - image: circleci/golang:1.9
+
+  "golang-1.10":
+    <<: *shared
+    docker:
+      - image: circleci/golang:1.10
+
+  "golang-1.11":
+    <<: *shared
+    docker:
+      - image: circleci/golang:1.11-rc
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "golang-1.9"
+      - "golang-1.10"
+      - "golang-1.11"
