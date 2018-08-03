@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/utilitywarehouse/go-onfido"
+	"github.com/uw-labs/go-onfido"
 )
 
 func main() {
