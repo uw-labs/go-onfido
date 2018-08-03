@@ -9,7 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	"github.com/utilitywarehouse/go-onfido"
+	"github.com/uw-labs/go-onfido"
 )
 
 func TestGetReport_NonOKResponse(t *testing.T) {

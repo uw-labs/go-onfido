@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	onfido "github.com/utilitywarehouse/go-onfido"
+	onfido "github.com/uw-labs/go-onfido"
 )
 
 func TestUploadDocument_NonOKResponse(t *testing.T) {

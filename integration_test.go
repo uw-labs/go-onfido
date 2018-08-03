@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	onfido "github.com/utilitywarehouse/go-onfido"
+	onfido "github.com/uw-labs/go-onfido"
 )
 
 var (
