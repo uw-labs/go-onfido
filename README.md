@@ -2,6 +2,8 @@
 
 Client for the [Onfido API](https://documentation.onfido.com/)
 
+[![go-doc](https://godoc.org/github.com/uw-labs/go-onfido?status.svg)](https://godoc.org/github.com/uw-labs/go-onfido)
+
 > This library was built for Utility Warehouse internal projects, so priority was given to supporting the
 features we needed. If the library is missing a feature from the API, raise an issue or ideally open a PR.
 
