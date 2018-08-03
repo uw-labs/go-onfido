@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/gorilla/mux"
-	onfido "github.com/utilitywarehouse/go-onfido"
+	onfido "github.com/uw-labs/go-onfido"
 )
 
 func TestNewSdkToken_NonOKResponse(t *testing.T) {
@@ -35,7 +35,7 @@ func TestNewSdkToken_NonOKResponse(t *testing.T) {
 func TestNewSdkToken_ApplicantsRetrieved(t *testing.T) {
 	expected := onfido.SdkToken{
 		ApplicantID: "klj25h2jk5j4k5jk35",
-		Referrer:    "https://*.utilitywarehouse.co.uk/documentation/*",
+		Referrer:    "https://*.uw-labs.co.uk/documentation/*",
 		Token:       "423423m4n234czxKJKDLF",
 	}
 	expectedJson, err := json.Marshal(expected)
