@@ -10,10 +10,26 @@ import (
 // CheckType represents a check type (express, standard)
 type CheckType string
 
+// CheckStatus represents a status of a check
+type CheckStatus string
+
+// CheckResult represents a result of a check (clear, consider)
+type CheckResult string
+
 // Supported check types
 const (
 	CheckTypeExpress  CheckType = "express"
 	CheckTypeStandard CheckType = "standard"
+
+	CheckStatusInProgress        CheckStatus = "in_progress"
+	CheckStatusAwaitingApplicant CheckStatus = "awaiting_applicant"
+	CheckStatusComplete          CheckStatus = "complete"
+	CheckStatusWithdrawn         CheckStatus = "withdrawn"
+	CheckStatusPaused            CheckStatus = "paused"
+	CheckStatusReopened          CheckStatus = "reopened"
+
+	CheckResultClear    CheckResult = "clear"
+	CheckResultConsider CheckResult = "consider"
 )
 
 // CheckRequest represents a check request to Onfido API
@@ -29,18 +45,18 @@ type CheckRequest struct {
 
 // Check represents a check in Onfido API
 type Check struct {
-	ID          string       `json:"id,omitempty"`
-	CreatedAt   *time.Time   `json:"created_at,omitempty"`
-	Href        string       `json:"href,omitempty"`
-	Type        CheckType    `json:"type,omitempty"`
-	Status      string       `json:"status,omitempty"`
-	Result      ReportResult `json:"result,omitempty"`
-	DownloadURI string       `json:"download_uri,omitempty"`
-	FormURI     string       `json:"form_uri,omitempty"`
-	RedirectURI string       `json:"redirect_uri,omitempty"`
-	ResultsURI  string       `json:"results_uri,omitempty"`
-	Reports     []*Report    `json:"reports,omitempty"`
-	Tags        []string     `json:"tags,omitempty"`
+	ID          string      `json:"id,omitempty"`
+	CreatedAt   *time.Time  `json:"created_at,omitempty"`
+	Href        string      `json:"href,omitempty"`
+	Type        CheckType   `json:"type,omitempty"`
+	Status      CheckStatus `json:"status,omitempty"`
+	Result      CheckResult `json:"result,omitempty"`
+	DownloadURI string      `json:"download_uri,omitempty"`
+	FormURI     string      `json:"form_uri,omitempty"`
+	RedirectURI string      `json:"redirect_uri,omitempty"`
+	ResultsURI  string      `json:"results_uri,omitempty"`
+	Reports     []*Report   `json:"reports,omitempty"`
+	Tags        []string    `json:"tags,omitempty"`
 }
 
 // Checks represents a list of checks in Onfido API
