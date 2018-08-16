@@ -22,7 +22,7 @@ const (
 	CheckTypeStandard CheckType = "standard"
 
 	CheckStatusInProgress        CheckStatus = "in_progress"
-	CheckStatusAvaitingApplicant CheckStatus = "awaiting_applicant"
+	CheckStatusAwaitingApplicant CheckStatus = "awaiting_applicant"
 	CheckStatusComplete          CheckStatus = "complete"
 	CheckStatusWithdrawn         CheckStatus = "withdrawn"
 	CheckStatusPaused            CheckStatus = "paused"
