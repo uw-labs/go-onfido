@@ -37,12 +37,14 @@ type HTTPRequester interface {
 type Error struct {
 	Resp *http.Response
 	Err  struct {
-		ID     string                                 `json:"id"`
-		Type   string                                 `json:"type"`
-		Msg    string                                 `json:"message"`
-		Fields map[string]struct{ Messages []string } `json:"fields"`
+		ID     string      `json:"id"`
+		Type   string      `json:"type"`
+		Msg    string      `json:"message"`
+		Fields ErrorFields `json:"fields"`
 	} `json:"error"`
 }
+
+type ErrorFields map[string]interface{}
 
 func (e *Error) Error() string {
 	if e.Err.Msg != "" {
