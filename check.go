@@ -57,6 +57,9 @@ type Check struct {
 	ResultsURI  string      `json:"results_uri,omitempty"`
 	Reports     []*Report   `json:"reports,omitempty"`
 	Tags        []string    `json:"tags,omitempty"`
+	// Consider is used for Sandbox Testing of multiple report scenarios.
+	// see https://documentation.onfido.com/#sandbox-responses
+	Consider []ReportResult `json:"consider,omitempty"`
 }
 
 // Checks represents a list of checks in Onfido API
