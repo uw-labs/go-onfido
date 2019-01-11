@@ -62,6 +62,25 @@ type Check struct {
 	Tags        []string    `json:"tags,omitempty"`
 }
 
+// CheckRetrieved represents a check in the Onfido API which has been retrieved.
+// This is subtly different to the Check type above, as the Reports slice
+// is just a string of Report IDs, not fully expanded Report objects.
+// See https://documentation.onfido.com/?shell#check-object (for Shell)
+type CheckRetrieved struct {
+	ID          string      `json:"id,omitempty"`
+	CreatedAt   *time.Time  `json:"created_at,omitempty"`
+	Href        string      `json:"href,omitempty"`
+	Type        CheckType   `json:"type,omitempty"`
+	Status      CheckStatus `json:"status,omitempty"`
+	Result      CheckResult `json:"result,omitempty"`
+	DownloadURI string      `json:"download_uri,omitempty"`
+	FormURI     string      `json:"form_uri,omitempty"`
+	RedirectURI string      `json:"redirect_uri,omitempty"`
+	ResultsURI  string      `json:"results_uri,omitempty"`
+	Reports     []string    `json:"reports,omitempty"`
+	Tags        []string    `json:"tags,omitempty"`
+}
+
 // Checks represents a list of checks in Onfido API
 type Checks struct {
 	Checks []*Check `json:"checks"`
@@ -87,13 +106,13 @@ func (c *Client) CreateCheck(ctx context.Context, applicantID string, cr CheckRe
 
 // GetCheck retrieves a check for the provided applicant by its ID.
 // see https://documentation.onfido.com/?shell#retrieve-check
-func (c *Client) GetCheck(ctx context.Context, applicantID, id string) (*Check, error) {
+func (c *Client) GetCheck(ctx context.Context, applicantID, id string) (*CheckRetrieved, error) {
 	req, err := c.newRequest("GET", "/applicants/"+applicantID+"/checks/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var resp Check
+	var resp CheckRetrieved
 	_, err = c.do(ctx, req, &resp)
 	return &resp, err
 }
