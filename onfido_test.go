@@ -182,10 +182,10 @@ func TestDo_InvalidStatusCode_InvalidJsonParsed(t *testing.T) {
 func TestDo_InvalidStatusCode_JsonParsed(t *testing.T) {
 	expected := Error{
 		Err: struct {
-			ID     string                                 `json:"id"`
-			Type   string                                 `json:"type"`
-			Msg    string                                 `json:"message"`
-			Fields map[string]struct{ Messages []string } `json:"fields"`
+			ID     string      `json:"id"`
+			Type   string      `json:"type"`
+			Msg    string      `json:"message"`
+			Fields ErrorFields `json:"fields"`
 		}{
 			ID:   "123",
 			Type: "foo",
