@@ -43,7 +43,7 @@ type CheckRequest struct {
 	ChargeApplicantForCheck bool      `json:"charge_applicant_for_check,omitempty"`
 	// Consider is used for Sandbox Testing of multiple report scenarios.
 	// see https://documentation.onfido.com/#sandbox-responses
-	Consider []ReportResult `json:"consider,omitempty"`
+	Consider []ReportName `json:"consider,omitempty"`
 }
 
 // Check represents a check in Onfido API
