@@ -117,6 +117,45 @@ func (c *Client) GetCheck(ctx context.Context, applicantID, id string) (*CheckRe
 	return &resp, err
 }
 
+// GetCheckExpanded retrieves a check for the provided applicant by its ID, with
+// the Check's Reports expanded within the returned Check object.
+// see https://documentation.onfido.com/?shell#retrieve-check but refer to the JSON
+// response object for https://documentation.onfido.com/?php#check-object for the expanded contents.
+func (c *Client) GetCheckExpanded(ctx context.Context, applicantID, id string) (*Check, error) {
+	// Get the CheckRetrieved object. This only includes Report IDs, not the expanded Report objects.
+	chkRetrieved, err := c.GetCheck(ctx, applicantID, id)
+	if err != nil {
+		return nil, err
+	}
+
+	// Build a regular Check object, this is what will be returned assuming there is not an error.
+	check := Check{
+		CreatedAt:   chkRetrieved.CreatedAt,
+		DownloadURI: chkRetrieved.DownloadURI,
+		FormURI:     chkRetrieved.FormURI,
+		Href:        chkRetrieved.Href,
+		ID:          chkRetrieved.ID,
+		RedirectURI: chkRetrieved.RedirectURI,
+		Reports:     make([]*Report, len(chkRetrieved.Reports)),
+		Result:      chkRetrieved.Result,
+		ResultsURI:  chkRetrieved.ResultsURI,
+		Status:      chkRetrieved.Status,
+		Tags:        chkRetrieved.Tags,
+		Type:        chkRetrieved.Type,
+	}
+
+	// For each Report ID in the CheckRetrieved object, fetch (expand) the Report
+	// into the returned Check object.
+	for i, reportID := range chkRetrieved.Reports {
+		rep, err := c.GetReport(ctx, id, reportID)
+		if err != nil {
+			return nil, err
+		}
+		check.Reports[i] = rep
+	}
+	return &check, nil
+}
+
 // ResumeCheck resumes a paused check by its ID.
 // see https://documentation.onfido.com/?shell#resume-check
 func (c *Client) ResumeCheck(ctx context.Context, id string) (*Check, error) {
