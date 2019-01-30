@@ -182,14 +182,18 @@ func TestDo_InvalidStatusCode_InvalidJsonParsed(t *testing.T) {
 func TestDo_InvalidStatusCode_JsonParsed(t *testing.T) {
 	expected := Error{
 		Err: struct {
-			ID     string                                 `json:"id"`
-			Type   string                                 `json:"type"`
-			Msg    string                                 `json:"message"`
-			Fields map[string]struct{ Messages []string } `json:"fields"`
+			ID     string      `json:"id"`
+			Type   string      `json:"type"`
+			Msg    string      `json:"message"`
+			Fields ErrorFields `json:"fields"`
 		}{
 			ID:   "123",
 			Type: "foo",
 			Msg:  "some msg",
+			Fields: map[string][]string{
+				"first_name": []string{"can't be blank"},
+				"last_name":  []string{"can't be blank", "is too short (minimum is 2 characters)"},
+			},
 		},
 	}
 	encodedErr, err := json.Marshal(expected)
@@ -218,6 +222,10 @@ func TestDo_InvalidStatusCode_JsonParsed(t *testing.T) {
 	assert.Equal(t, expected.Err.ID, onfidoErr.Err.ID)
 	assert.Equal(t, expected.Err.Type, onfidoErr.Err.Type)
 	assert.Equal(t, expected.Err.Msg, onfidoErr.Err.Msg)
+	for name, value := range expected.Err.Fields {
+		assert.Contains(t, onfidoErr.Err.Fields, name)
+		assert.ElementsMatch(t, onfidoErr.Err.Fields[name], value)
+	}
 }
 
 func TestDo_InvalidJsonResponse(t *testing.T) {
