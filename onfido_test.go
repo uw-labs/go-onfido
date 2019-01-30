@@ -222,6 +222,10 @@ func TestDo_InvalidStatusCode_JsonParsed(t *testing.T) {
 	assert.Equal(t, expected.Err.ID, onfidoErr.Err.ID)
 	assert.Equal(t, expected.Err.Type, onfidoErr.Err.Type)
 	assert.Equal(t, expected.Err.Msg, onfidoErr.Err.Msg)
+	for name, value := range expected.Err.Fields {
+		assert.Contains(t, onfidoErr.Err.Fields, name)
+		assert.ElementsMatch(t, onfidoErr.Err.Fields[name], value)
+	}
 }
 
 func TestDo_InvalidJsonResponse(t *testing.T) {
