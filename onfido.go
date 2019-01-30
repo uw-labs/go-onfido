@@ -44,7 +44,7 @@ type Error struct {
 	} `json:"error"`
 }
 
-type ErrorFields map[string]interface{}
+type ErrorFields map[string][]string
 
 func (e *Error) Error() string {
 	if e.Err.Msg != "" {
