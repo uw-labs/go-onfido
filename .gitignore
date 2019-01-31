@@ -1,6 +1,2 @@
-.gitignore
 .DS_Store
-vendor
-glide.*
-Gopkg.*
-cover.out
+vendor/
