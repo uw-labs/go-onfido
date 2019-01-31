@@ -7,9 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 	onfido "github.com/uw-labs/go-onfido"
 )
 

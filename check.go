@@ -65,7 +65,7 @@ type Check struct {
 // CheckRetrieved represents a check in the Onfido API which has been retrieved.
 // This is subtly different to the Check type above, as the Reports slice
 // is just a string of Report IDs, not fully expanded Report objects.
-// See https://documentation.onfido.com/?shell#check-object (for Shell)
+// See https://documentation.onfido.com/?shell#check-object (Shell)
 type CheckRetrieved struct {
 	ID          string      `json:"id,omitempty"`
 	CreatedAt   *time.Time  `json:"created_at,omitempty"`
@@ -119,8 +119,8 @@ func (c *Client) GetCheck(ctx context.Context, applicantID, id string) (*CheckRe
 
 // GetCheckExpanded retrieves a check for the provided applicant by its ID, with
 // the Check's Reports expanded within the returned Check object.
-// see https://documentation.onfido.com/?shell#retrieve-check but refer to the JSON
-// response object for https://documentation.onfido.com/?php#check-object for the expanded contents.
+// see https://documentation.onfido.com/?shell#retrieve-check (Shell) but refer to the JSON
+// response object for https://documentation.onfido.com/?php#check-object (PHP) for the expanded contents.
 func (c *Client) GetCheckExpanded(ctx context.Context, applicantID, id string) (*Check, error) {
 	// Get the CheckRetrieved object. This only includes Report IDs, not the expanded Report objects.
 	chkRetrieved, err := c.GetCheck(ctx, applicantID, id)
@@ -128,7 +128,7 @@ func (c *Client) GetCheckExpanded(ctx context.Context, applicantID, id string) (
 		return nil, err
 	}
 
-	// Build a regular Check object, this is what will be returned assuming there is not an error.
+	// Build a regular Check object, this is what will be returned assuming there is no error.
 	check := Check{
 		CreatedAt:   chkRetrieved.CreatedAt,
 		DownloadURI: chkRetrieved.DownloadURI,

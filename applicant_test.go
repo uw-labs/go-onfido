@@ -9,7 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	"github.com/uw-labs/go-onfido"
+	onfido "github.com/uw-labs/go-onfido"
 )
 
 func TestCreateApplicant_NonOKResponse(t *testing.T) {
