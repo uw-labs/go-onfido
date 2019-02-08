@@ -10,7 +10,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-
 )
 
 func TestUploadDocument_NonOKResponse(t *testing.T) {

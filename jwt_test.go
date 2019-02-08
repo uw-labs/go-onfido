@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/gorilla/mux"
-
 )
 
 func TestNewSdkToken_NonOKResponse(t *testing.T) {
