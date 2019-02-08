@@ -1,4 +1,4 @@
-package onfido_test
+package onfido
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	onfido "github.com/uw-labs/go-onfido"
+
 )
 
 func TestUploadDocument_NonOKResponse(t *testing.T) {
@@ -20,13 +20,13 @@ func TestUploadDocument_NonOKResponse(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
-	docReq := onfido.DocumentRequest{
+	docReq := DocumentRequest{
 		File: bytes.NewReader([]byte("test")),
-		Type: onfido.DocumentTypeIDCard,
-		Side: onfido.DocumentSideFront,
+		Type: DocumentTypeIDCard,
+		Side: DocumentSideFront,
 	}
 
 	_, err := client.UploadDocument(context.Background(), "", docReq)
@@ -37,15 +37,15 @@ func TestUploadDocument_NonOKResponse(t *testing.T) {
 
 func TestUploadDocument_DocumentUploaded(t *testing.T) {
 	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
-	expected := onfido.Document{
+	expected := Document{
 		ID:           "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Href:         "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
 		DownloadHref: "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86/download",
 		FileName:     "localfile.png",
 		FileType:     "png",
 		FileSize:     282123,
-		Type:         onfido.DocumentTypePassport,
-		Side:         onfido.DocumentSideBack,
+		Type:         DocumentTypePassport,
+		Side:         DocumentSideBack,
 	}
 	expectedJson, err := json.Marshal(expected)
 	if err != nil {
@@ -64,10 +64,10 @@ func TestUploadDocument_DocumentUploaded(t *testing.T) {
 	srv := httptest.NewServer(m)
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
-	d, err := client.UploadDocument(context.Background(), applicantID, onfido.DocumentRequest{
+	d, err := client.UploadDocument(context.Background(), applicantID, DocumentRequest{
 		File: bytes.NewReader([]byte("test")),
 		Type: expected.Type,
 		Side: expected.Side,
@@ -93,7 +93,7 @@ func TestGetDocument_NonOKResponse(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	_, err := client.GetDocument(context.Background(), "", "")
@@ -104,15 +104,15 @@ func TestGetDocument_NonOKResponse(t *testing.T) {
 
 func TestGetDocument_DocumentRetrieved(t *testing.T) {
 	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
-	expected := onfido.Document{
+	expected := Document{
 		ID:           "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Href:         "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
 		DownloadHref: "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86/download",
 		FileName:     "localfile.png",
 		FileType:     "png",
 		FileSize:     282123,
-		Type:         onfido.DocumentTypePassport,
-		Side:         onfido.DocumentSideBack,
+		Type:         DocumentTypePassport,
+		Side:         DocumentSideBack,
 	}
 	expectedJson, err := json.Marshal(expected)
 	if err != nil {
@@ -132,7 +132,7 @@ func TestGetDocument_DocumentRetrieved(t *testing.T) {
 	srv := httptest.NewServer(m)
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	d, err := client.GetDocument(context.Background(), applicantID, expected.ID)
@@ -157,7 +157,7 @@ func TestListDocuments_NonOKResponse(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	it := client.ListDocuments("")
@@ -171,18 +171,18 @@ func TestListDocuments_NonOKResponse(t *testing.T) {
 
 func TestListDocuments_DocumentsRetrieved(t *testing.T) {
 	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
-	expected := onfido.Document{
+	expected := Document{
 		ID:           "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Href:         "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
 		DownloadHref: "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86/download",
 		FileName:     "localfile.png",
 		FileType:     "png",
 		FileSize:     282123,
-		Type:         onfido.DocumentTypePassport,
-		Side:         onfido.DocumentSideBack,
+		Type:         DocumentTypePassport,
+		Side:         DocumentSideBack,
 	}
-	expectedJson, err := json.Marshal(onfido.Documents{
-		Documents: []*onfido.Document{&expected},
+	expectedJson, err := json.Marshal(Documents{
+		Documents: []*Document{&expected},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -200,7 +200,7 @@ func TestListDocuments_DocumentsRetrieved(t *testing.T) {
 	srv := httptest.NewServer(m)
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	it := client.ListDocuments(applicantID)

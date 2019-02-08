@@ -1,4 +1,4 @@
-package onfido_test
+package onfido
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	onfido "github.com/uw-labs/go-onfido"
+
 )
 
 func TestPickAddresses_EmptyPostcode(t *testing.T) {
@@ -19,14 +19,14 @@ func TestPickAddresses_EmptyPostcode(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	it := client.PickAddresses("")
 	if it.Next(context.Background()) == true {
 		t.Fatal("expected iterator not to return next item, got next item")
 	}
-	if it.Err() != onfido.ErrEmptyPostcode {
+	if it.Err() != ErrEmptyPostcode {
 		t.Fatal("expected iterator to error with empty postcode")
 	}
 }
@@ -38,7 +38,7 @@ func TestPickAddresses_NonOKResponse(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	it := client.PickAddresses("SW1 XAM")
@@ -51,15 +51,15 @@ func TestPickAddresses_NonOKResponse(t *testing.T) {
 }
 
 func TestPickAddresses_ApplicantsRetrieved(t *testing.T) {
-	expected := onfido.Address{
+	expected := Address{
 		BuildingNumber: "20",
 		Street:         "Sandbanks Way",
 		Town:           "Aldershot",
 		Postcode:       "SAP POP",
 		Country:        "GBR",
 	}
-	expectedJson, err := json.Marshal(onfido.Addresses{
-		Addresses: []*onfido.Address{&expected},
+	expectedJson, err := json.Marshal(Addresses{
+		Addresses: []*Address{&expected},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -76,7 +76,7 @@ func TestPickAddresses_ApplicantsRetrieved(t *testing.T) {
 	srv := httptest.NewServer(m)
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	it := client.PickAddresses(expected.Postcode)

@@ -1,7 +1,7 @@
 version: 2
 
 shared: &shared
-  working_directory: /go/src/github.com/uw-labs/go-onfido
+  working_directory: /go/src/github.com/tumelohq/go-onfido
   steps:
     - checkout
     - run: go get -v -t -d -tags integration ./...
