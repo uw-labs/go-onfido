@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 	"testing"
-	)
+)
 
 func TestNewWebhookFromEnv_MissingToken(t *testing.T) {
 	_, err := NewWebhookFromEnv()
