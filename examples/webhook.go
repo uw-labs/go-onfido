@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/uw-labs/go-onfido"
+	"github.com/tumelohq/go-onfido"
 )
 
 func main() {

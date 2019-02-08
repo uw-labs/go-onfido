@@ -1,4 +1,4 @@
-package onfido_test
+package onfido
 
 import (
 	"context"
@@ -9,7 +9,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
-	"github.com/uw-labs/go-onfido"
 )
 
 func TestGetReport_NonOKResponse(t *testing.T) {
@@ -19,7 +18,7 @@ func TestGetReport_NonOKResponse(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	_, err := client.GetReport(context.Background(), "", "")
@@ -30,13 +29,13 @@ func TestGetReport_NonOKResponse(t *testing.T) {
 
 func TestGetReport_ReportRetrieved(t *testing.T) {
 	checkID := "541d040b-89f8-444b-8921-16b1333bf1c6"
-	expected := onfido.Report{
+	expected := Report{
 		ID:        "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
-		Name:      onfido.ReportNameDocument,
+		Name:      ReportNameDocument,
 		Status:    "complete",
-		Result:    onfido.ReportResultClear,
-		SubResult: onfido.ReportSubResultClear,
-		Variant:   onfido.ReportVariantStandard,
+		Result:    ReportResultClear,
+		SubResult: ReportSubResultClear,
+		Variant:   ReportVariantStandard,
 		Href:      "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
 	}
 	expectedJson, err := json.Marshal(expected)
@@ -57,7 +56,7 @@ func TestGetReport_ReportRetrieved(t *testing.T) {
 	srv := httptest.NewServer(m)
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	r, err := client.GetReport(context.Background(), checkID, expected.ID)
@@ -81,7 +80,7 @@ func TestResumeReport_NonOKResponse(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	err := client.ResumeReport(context.Background(), "", "")
@@ -106,7 +105,7 @@ func TestResumeReport_ReportResumed(t *testing.T) {
 	srv := httptest.NewServer(m)
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	err := client.ResumeReport(context.Background(), checkID, reportId)
@@ -122,7 +121,7 @@ func TestCancelReport_NonOKResponse(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	err := client.CancelReport(context.Background(), "", "")
@@ -147,7 +146,7 @@ func TestCancelReport_ReportResumed(t *testing.T) {
 	srv := httptest.NewServer(m)
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	err := client.CancelReport(context.Background(), checkID, reportId)
@@ -163,7 +162,7 @@ func TestListReports_NonOKResponse(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	it := client.ListReports("")
@@ -177,17 +176,17 @@ func TestListReports_NonOKResponse(t *testing.T) {
 
 func TestListReports_ReportsRetrieved(t *testing.T) {
 	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
-	expected := onfido.Report{
+	expected := Report{
 		ID:        "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
-		Name:      onfido.ReportNameDocument,
+		Name:      ReportNameDocument,
 		Status:    "complete",
-		Result:    onfido.ReportResultClear,
-		SubResult: onfido.ReportSubResultClear,
-		Variant:   onfido.ReportVariantStandard,
+		Result:    ReportResultClear,
+		SubResult: ReportSubResultClear,
+		Variant:   ReportVariantStandard,
 		Href:      "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
 	}
-	expectedJson, err := json.Marshal(onfido.Reports{
-		Reports: []*onfido.Report{&expected},
+	expectedJson, err := json.Marshal(Reports{
+		Reports: []*Report{&expected},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -205,7 +204,7 @@ func TestListReports_ReportsRetrieved(t *testing.T) {
 	srv := httptest.NewServer(m)
 	defer srv.Close()
 
-	client := onfido.NewClient("123")
+	client := NewClient("123")
 	client.Endpoint = srv.URL
 
 	it := client.ListReports(applicantID)

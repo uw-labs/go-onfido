@@ -1,6 +1,6 @@
 // +build integration
 
-package onfido_test
+package onfido
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	onfido "github.com/uw-labs/go-onfido"
+
 )
 
 var (

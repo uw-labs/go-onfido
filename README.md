@@ -1,8 +1,8 @@
-# go-onfido [![CircleCI](https://circleci.com/gh/uw-labs/go-onfido.svg?style=svg)](https://circleci.com/gh/uw-labs/go-onfido) [![Go Report Card](https://goreportcard.com/badge/github.com/uw-labs/go-onfido)](https://goreportcard.com/report/github.com/uw-labs/go-onfido)
+# go-onfido [![CircleCI](https://circleci.com/gh/uw-labs/go-onfido.svg?style=svg)](https://circleci.com/gh/uw-labs/go-onfido) [![Go Report Card](https://goreportcard.com/badge/github.com/tumelohq/go-onfido)](https://goreportcard.com/report/github.com/tumelohq/go-onfido)
 
 Client for the [Onfido API](https://documentation.onfido.com/)
 
-[![go-doc](https://godoc.org/github.com/uw-labs/go-onfido?status.svg)](https://godoc.org/github.com/uw-labs/go-onfido)
+[![go-doc](https://godoc.org/github.com/tumelohq/go-onfido?status.svg)](https://godoc.org/github.com/tumelohq/go-onfido)
 
 > This library was built for Utility Warehouse internal projects, so priority was given to supporting the
 features we needed. If the library is missing a feature from the API, raise an issue or ideally open a PR.
@@ -29,6 +29,6 @@ Or you can instantiate usign the env variable `ONFIDO_TOKEN`
 client, err := onfido.NewClientFromEnv()
 ```
 
-Now checkout some of the [examples](https://github.com/uw-labs/go-onfido/tree/master/examples)
+Now checkout some of the [examples](https://github.com/tumelohq/go-onfido/tree/master/examples)
 
 
