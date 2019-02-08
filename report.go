@@ -12,6 +12,7 @@ const (
 	ReportNameDocument         ReportName = "document"
 	ReportNameFacialSimilarity ReportName = "facial_similarity"
 	ReportNameStreetLevel      ReportName = "street_level"
+	ReportNameWatchlist        ReportName = "watchlist"
 
 	ReportResultClear        ReportResult = "clear"
 	ReportResultConsider     ReportResult = "consider"
