@@ -9,3 +9,11 @@ integration_tests:
 .PHONY: fmt
 fmt:
 	- @go fmt .
+
+.PHONY: go_get
+go_get:
+	- @go get .
+
+.PHONY: go_update
+go_update:
+	- @go get -u .
