@@ -3,6 +3,7 @@ package onfido
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -67,4 +68,46 @@ func TestNewSdkToken_ApplicantsRetrieved(t *testing.T) {
 	assert.Equal(t, expected.ApplicantID, token.ApplicantID)
 	assert.Equal(t, expected.Referrer, token.Referrer)
 	assert.Equal(t, expected.Token, token.Token)
+}
+
+func ExampleClient_NewSdkToken() {
+	ctx := context.Background()
+
+	client, err := NewClientFromEnv()
+	if err != nil {
+		panic(err)
+	}
+	if client.Token.Prod() {
+		panic("onfido token is only for production use")
+	}
+
+	applicant, err := client.CreateApplicant(ctx, Applicant{
+		Email:     "rcrowe@example.co.uk",
+		FirstName: "Rob",
+		LastName:  "Crowe",
+		Addresses: []Address{
+			{
+				BuildingNumber: "18",
+				Street:         "Wind Corner",
+				Town:           "Crawley",
+				State:          "West Sussex",
+				Postcode:       "NW9 5AB",
+				Country:        "GBR",
+				StartDate:      "2018-02-10",
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	t, err := client.NewSdkToken(ctx, applicant.ID, "https://*.onfido.com/documentation/*")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Token: %v\n", t.Token)
+
+	if err := client.DeleteApplicant(ctx, applicant.ID); err != nil {
+		panic(err)
+	}
 }
