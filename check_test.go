@@ -3,6 +3,7 @@ package onfido
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -296,4 +297,55 @@ func TestListChecks_ChecksRetrieved(t *testing.T) {
 	if it.Err() != nil {
 		t.Fatal(it.Err())
 	}
+}
+
+func ExampleClient_CreateCheck() {
+	ctx := context.Background()
+
+	client, err := NewClientFromEnv()
+	if err != nil {
+		panic(err)
+	}
+	if client.Token.Prod() {
+		panic("onfido token is only for production use")
+	}
+
+	applicant, err := client.CreateApplicant(ctx, Applicant{
+		Email:     "rcrowe@example.co.uk",
+		FirstName: "Rob",
+		LastName:  "Crowe",
+		Addresses: []Address{
+			{
+				BuildingNumber: "18",
+				Street:         "Wind Corner",
+				Town:           "Crawley",
+				State:          "West Sussex",
+				Postcode:       "NW9 5AB",
+				Country:        "GBR",
+				StartDate:      "2018-02-10",
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	check, err := client.CreateCheck(ctx, applicant.ID, CheckRequest{
+		Type: CheckTypeStandard,
+		Reports: []*Report{
+			{
+				Name: ReportNameDocument,
+			},
+			{
+				Name:    ReportNameIdentity,
+				Variant: ReportVariantKYC,
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Form: %+v\n", check.FormURI)
+
 }

@@ -3,6 +3,7 @@ package onfido
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -296,4 +297,107 @@ func TestUpdateApplicant_ValidRequest(t *testing.T) {
 	assert.Equal(t, expected.Title, a.Title)
 	assert.Equal(t, expected.FirstName, a.FirstName)
 	assert.Equal(t, expected.LastName, a.LastName)
+}
+
+func ExampleClient_CreateApplicant() {
+	ctx := context.Background()
+
+	// Creating Client
+	client, err := NewClientFromEnv()
+	if err != nil {
+		panic(err)
+	}
+	if client.Token.Prod() {
+		panic("onfido token is only for production use")
+	}
+
+	// Creating Applicant
+	applicant, err := client.CreateApplicant(ctx, Applicant{
+		Email:     "rcrowe@example.co.uk",
+		FirstName: "Rob",
+		LastName:  "Crowe",
+		Addresses: []Address{
+			{
+				BuildingNumber: "18",
+				Street:         "Wind Corner",
+				Town:           "Crawley",
+				State:          "West Sussex",
+				Postcode:       "NW9 5AB",
+				Country:        "GBR",
+				StartDate:      "2018-02-10",
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	// Deleting Applicant
+	if err := client.DeleteApplicant(ctx, applicant.ID); err != nil {
+		panic(err)
+	}
+}
+
+func ExampleClient_GetApplicant() {
+	ctx := context.Background()
+
+	client, err := NewClientFromEnv()
+	if err != nil {
+		panic(err)
+	}
+	if client.Token.Prod() {
+		panic("onfido token is only for production use")
+	}
+
+	applicant, err := client.CreateApplicant(ctx, Applicant{
+		Email:     "rcrowe@example.co.uk",
+		FirstName: "Rob",
+		LastName:  "Crowe",
+		Addresses: []Address{
+			{
+				BuildingNumber: "18",
+				Street:         "Wind Corner",
+				Town:           "Crawley",
+				State:          "West Sussex",
+				Postcode:       "NW9 5AB",
+				Country:        "GBR",
+				StartDate:      "2018-02-10",
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	// Getting Applicant
+	applicant, err = client.GetApplicant(ctx, applicant.ID)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := client.DeleteApplicant(ctx, applicant.ID); err != nil {
+		panic(err)
+	}
+
+}
+
+func ExampleClient_ListApplicants() {
+	ctx := context.Background()
+
+	client, err := NewClientFromEnv()
+	if err != nil {
+		panic(err)
+	}
+	if client.Token.Prod() {
+		panic("onfido token is only for production use")
+	}
+
+	iter := client.ListApplicants()
+
+	for iter.Next(ctx) {
+		fmt.Printf("%+v\n", iter.Applicant())
+	}
+	if iter.Err() != nil {
+		panic(iter.Err())
+	}
 }

@@ -252,3 +252,15 @@ func (c *stubbedHTTPClient) Do(req *http.Request) (*http.Response, error) {
 	}
 	return c.resp, nil
 }
+
+func ExampleError_Error() {
+	ctx := context.Background()
+
+	client := NewClient("")
+
+	err := client.DeleteApplicant(ctx, "123")
+	onfidoErr, ok := err.(*Error)
+	if ok {
+		fmt.Printf("got error from onfido api: %s\n", onfidoErr)
+	}
+}
