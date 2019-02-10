@@ -1,4 +1,4 @@
-# go-onfido [![CircleCI](https://circleci.com/gh/uw-labs/go-onfido.svg?style=svg)](https://circleci.com/gh/uw-labs/go-onfido) [![Go Report Card](https://goreportcard.com/badge/github.com/tumelohq/go-onfido)](https://goreportcard.com/report/github.com/tumelohq/go-onfido)
+# go-onfido [![Build Status](https://travis-ci.org/tumelohq/go-onfido.svg?branch=master)](https://travis-ci.org/tumelohq/go-onfido) [![Go Report Card](https://goreportcard.com/badge/github.com/tumelohq/go-onfido)](https://goreportcard.com/report/github.com/tumelohq/go-onfido)
 
 Client for the [Onfido API](https://documentation.onfido.com/)
 
