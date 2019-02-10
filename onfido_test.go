@@ -191,8 +191,8 @@ func TestDo_InvalidStatusCode_JsonParsed(t *testing.T) {
 			Type: "foo",
 			Msg:  "some msg",
 			Fields: map[string][]string{
-				"first_name": []string{"can't be blank"},
-				"last_name":  []string{"can't be blank", "is too short (minimum is 2 characters)"},
+				"first_name": {"can't be blank"},
+				"last_name":  {"can't be blank", "is too short (minimum is 2 characters)"},
 			},
 		},
 	}

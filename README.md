@@ -1,4 +1,6 @@
-# go-onfido [![Build Status](https://travis-ci.org/tumelohq/go-onfido.svg?branch=master)](https://travis-ci.org/tumelohq/go-onfido) [![Go Report Card](https://goreportcard.com/badge/github.com/tumelohq/go-onfido)](https://goreportcard.com/report/github.com/tumelohq/go-onfido)
+# go-onfido [![Build Status](https://travis-ci.org/tumelohq/go-onfido.svg?branch=master)](https://travis-ci.org/tumelohq/go-onfido) [![Go Report Card](https://goreportcard.com/badge/github.com/tumelohq/go-onfido)](https://goreportcard.com/report/github.com/tumelohq/go-onfido) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+                                                                                                                                                                                                                                                                                     
+
 
 Client for the [Onfido API](https://documentation.onfido.com/)
 
@@ -29,6 +31,5 @@ Or you can instantiate usign the env variable `ONFIDO_TOKEN`
 client, err := onfido.NewClientFromEnv()
 ```
 
-Now checkout some of the [examples](https://github.com/tumelohq/go-onfido/tree/master/examples)
-
+Examples can be found in the [documentation](https://godoc.org/github.com/tumelohq/go-onfido).
 
