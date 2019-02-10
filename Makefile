@@ -8,7 +8,7 @@ integration_tests:
 
 .PHONY: fmt
 fmt:
-	- @go fmt .
+	- @gofmt -s -w .
 
 .PHONY: go_get
 go_get:
