@@ -41,6 +41,9 @@ type CheckRequest struct {
 	SupressFormEmails       bool      `json:"suppress_form_emails,omitempty"`
 	Async                   bool      `json:"async,omitempty"`
 	ChargeApplicantForCheck bool      `json:"charge_applicant_for_check,omitempty"`
+	// Consider is used for Sandbox Testing of multiple report scenarios.
+	// see https://documentation.onfido.com/#sandbox-responses
+	Consider []ReportName `json:"consider,omitempty"`
 }
 
 // Check represents a check in Onfido API
