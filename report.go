@@ -26,6 +26,7 @@ const (
 	ReportVariantStandard ReportVariant = "standard"
 	ReportVariantKYC      ReportVariant = "kyc"
 	ReportVariantVideo    ReportVariant = "video"
+	ReportVariantFull     ReportVariant = "full"
 )
 
 // ReportName represents a report type name
