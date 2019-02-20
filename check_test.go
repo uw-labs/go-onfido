@@ -40,12 +40,9 @@ func TestCreateCheck_CheckCreated(t *testing.T) {
 		FormURI:     "https://onfido.com/information/1234",
 		RedirectURI: "https://somewhere.else",
 		ResultsURI:  "https://onfido.com/dashboard/information_requests/1234",
-		Reports: []*Report{
-			{
-				ID:     "7410a943-8f00-43d8-98de-36a774196d86",
-				Name:   ReportNameDocument,
-				Result: ReportResultClear,
-			},
+		Reports: []string{
+			"7410a943-8f00-43d8-98de-36a774196d86",
+			"7410a943-8f00-43d8-98de-36a774196d85",
 		},
 		Tags: []string{"my-tag"},
 	}
@@ -70,10 +67,18 @@ func TestCreateCheck_CheckCreated(t *testing.T) {
 	client := NewClient("123")
 	client.Endpoint = srv.URL
 
+	reports := []*Report{
+		{
+			ID:     "7410a943-8f00-43d8-98de-36a774196d86",
+			Name:   ReportNameDocument,
+			Result: ReportResultClear,
+		},
+	}
+
 	c, err := client.CreateCheck(context.Background(), applicantID, CheckRequest{
 		Type:              expected.Type,
 		RedirectURI:       expected.RedirectURI,
-		Reports:           expected.Reports,
+		Reports:           reports,
 		Tags:              expected.Tags,
 		SupressFormEmails: true,
 	})
@@ -120,12 +125,9 @@ func TestGetCheck_CheckRetrieved(t *testing.T) {
 		FormURI:     "https://onfido.com/information/1234",
 		RedirectURI: "https://somewhere.else",
 		ResultsURI:  "https://onfido.com/dashboard/information_requests/1234",
-		Reports: []*Report{
-			{
-				ID:     "7410a943-8f00-43d8-98de-36a774196d86",
-				Name:   ReportNameDocument,
-				Result: ReportResultClear,
-			},
+		Reports: []string{
+			"7410a943-8f00-43d8-98de-36a774196d86",
+			"7410a943-8f00-43d8-98de-36a774196d85",
 		},
 		Tags: []string{"my-tag"},
 	}
@@ -248,12 +250,9 @@ func TestListChecks_ChecksRetrieved(t *testing.T) {
 		FormURI:     "https://onfido.com/information/1234",
 		RedirectURI: "https://somewhere.else",
 		ResultsURI:  "https://onfido.com/dashboard/information_requests/1234",
-		Reports: []*Report{
-			{
-				ID:     "7410a943-8f00-43d8-98de-36a774196d86",
-				Name:   ReportNameDocument,
-				Result: ReportResultClear,
-			},
+		Reports: []string{
+			"7410a943-8f00-43d8-98de-36a774196d86",
+			"7410a943-8f00-43d8-98de-36a774196d85",
 		},
 		Tags: []string{"my-tag"},
 	}
