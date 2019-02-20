@@ -13,6 +13,7 @@ const (
 	ReportNameFacialSimilarity ReportName = "facial_similarity"
 	ReportNameStreetLevel      ReportName = "street_level"
 	ReportNameWatchlist        ReportName = "watchlist"
+	ReportNameProofOfAddress   ReportName = "proof_of_address"
 
 	ReportResultClear        ReportResult = "clear"
 	ReportResultConsider     ReportResult = "consider"
