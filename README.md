@@ -14,7 +14,7 @@ features we needed. If the library is missing a feature from the API, raise an i
 To install go-onfido, use `go get`:
 
 ```
-go get github.com/uw-labs/go-onfio
+go get github.com/tumelohq/go-onfido
 ```
 
 ## Usage
