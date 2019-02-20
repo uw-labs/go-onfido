@@ -1,6 +1,6 @@
 .PHONY: unit_test
 unit_tests:
-	- @go test -v -race .
+	- @go test -race .
 
 .PHONY: integration_tests
 integration_tests:
