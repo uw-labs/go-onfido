@@ -32,7 +32,8 @@ const (
 	CheckResultConsider CheckResult = "consider"
 )
 
-// CheckRequest represents a check request to Onfido API
+// CheckRequest represents a check request to Onfido API. It contains the consider field which is used for Sandbox
+// Testing of multiple report scenarios. See https://documentation.onfido.com/#sandbox-responses
 type CheckRequest struct {
 	Type                    CheckType `json:"type"`
 	RedirectURI             string    `json:"redirect_uri,omitempty"`
@@ -41,6 +42,8 @@ type CheckRequest struct {
 	SupressFormEmails       bool      `json:"suppress_form_emails,omitempty"`
 	Async                   bool      `json:"async,omitempty"`
 	ChargeApplicantForCheck bool      `json:"charge_applicant_for_check,omitempty"`
+	// Used for sandbox testing
+	Consider []ReportName `json:"consider,omitempty"`
 }
 
 // Check represents a check in Onfido API
