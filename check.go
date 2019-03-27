@@ -55,7 +55,7 @@ type Check struct {
 	FormURI     string      `json:"form_uri,omitempty"`
 	RedirectURI string      `json:"redirect_uri,omitempty"`
 	ResultsURI  string      `json:"results_uri,omitempty"`
-	Reports     []*Report   `json:"reports,omitempty"`
+	Reports     []string    `json:"reports,omitempty"`
 	Tags        []string    `json:"tags,omitempty"`
 }
 
