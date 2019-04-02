@@ -41,6 +41,9 @@ type CheckRequest struct {
 	SupressFormEmails       bool      `json:"suppress_form_emails,omitempty"`
 	Async                   bool      `json:"async,omitempty"`
 	ChargeApplicantForCheck bool      `json:"charge_applicant_for_check,omitempty"`
+	// Consider is used for Sandbox Testing of multiple report scenarios.
+	// see https://documentation.onfido.com/#sandbox-responses
+	Consider []ReportName `json:"consider,omitempty"`
 }
 
 // Check represents a check in Onfido API
@@ -56,6 +59,25 @@ type Check struct {
 	RedirectURI string      `json:"redirect_uri,omitempty"`
 	ResultsURI  string      `json:"results_uri,omitempty"`
 	Reports     []*Report   `json:"reports,omitempty"`
+	Tags        []string    `json:"tags,omitempty"`
+}
+
+// CheckRetrieved represents a check in the Onfido API which has been retrieved.
+// This is subtly different to the Check type above, as the Reports slice
+// is just a string of Report IDs, not fully expanded Report objects.
+// See https://documentation.onfido.com/?shell#check-object (Shell)
+type CheckRetrieved struct {
+	ID          string      `json:"id,omitempty"`
+	CreatedAt   *time.Time  `json:"created_at,omitempty"`
+	Href        string      `json:"href,omitempty"`
+	Type        CheckType   `json:"type,omitempty"`
+	Status      CheckStatus `json:"status,omitempty"`
+	Result      CheckResult `json:"result,omitempty"`
+	DownloadURI string      `json:"download_uri,omitempty"`
+	FormURI     string      `json:"form_uri,omitempty"`
+	RedirectURI string      `json:"redirect_uri,omitempty"`
+	ResultsURI  string      `json:"results_uri,omitempty"`
+	Reports     []string    `json:"reports,omitempty"`
 	Tags        []string    `json:"tags,omitempty"`
 }
 
@@ -84,15 +106,54 @@ func (c *Client) CreateCheck(ctx context.Context, applicantID string, cr CheckRe
 
 // GetCheck retrieves a check for the provided applicant by its ID.
 // see https://documentation.onfido.com/?shell#retrieve-check
-func (c *Client) GetCheck(ctx context.Context, applicantID, id string) (*Check, error) {
+func (c *Client) GetCheck(ctx context.Context, applicantID, id string) (*CheckRetrieved, error) {
 	req, err := c.newRequest("GET", "/applicants/"+applicantID+"/checks/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var resp Check
+	var resp CheckRetrieved
 	_, err = c.do(ctx, req, &resp)
 	return &resp, err
+}
+
+// GetCheckExpanded retrieves a check for the provided applicant by its ID, with
+// the Check's Reports expanded within the returned Check object.
+// see https://documentation.onfido.com/?shell#retrieve-check (Shell) but refer to the JSON
+// response object for https://documentation.onfido.com/?php#check-object (PHP) for the expanded contents.
+func (c *Client) GetCheckExpanded(ctx context.Context, applicantID, id string) (*Check, error) {
+	// Get the CheckRetrieved object. This only includes Report IDs, not the expanded Report objects.
+	chkRetrieved, err := c.GetCheck(ctx, applicantID, id)
+	if err != nil {
+		return nil, err
+	}
+
+	// Build a regular Check object, this is what will be returned assuming there is no error.
+	check := Check{
+		CreatedAt:   chkRetrieved.CreatedAt,
+		DownloadURI: chkRetrieved.DownloadURI,
+		FormURI:     chkRetrieved.FormURI,
+		Href:        chkRetrieved.Href,
+		ID:          chkRetrieved.ID,
+		RedirectURI: chkRetrieved.RedirectURI,
+		Reports:     make([]*Report, len(chkRetrieved.Reports)),
+		Result:      chkRetrieved.Result,
+		ResultsURI:  chkRetrieved.ResultsURI,
+		Status:      chkRetrieved.Status,
+		Tags:        chkRetrieved.Tags,
+		Type:        chkRetrieved.Type,
+	}
+
+	// For each Report ID in the CheckRetrieved object, fetch (expand) the Report
+	// into the returned Check object.
+	for i, reportID := range chkRetrieved.Reports {
+		rep, err := c.GetReport(ctx, id, reportID)
+		if err != nil {
+			return nil, err
+		}
+		check.Reports[i] = rep
+	}
+	return &check, nil
 }
 
 // ResumeCheck resumes a paused check by its ID.

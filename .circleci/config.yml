@@ -4,15 +4,10 @@ shared: &shared
   working_directory: /go/src/github.com/uw-labs/go-onfido
   steps:
     - checkout
-    - run: go get -v -t -d -tags integration ./...
-    - run: go test -v -race -tags integration -onfidoToken=${ONFIDO_TOKEN}
+    - run: go get -v -t -d ./...
+    - run: go test -v -race
 
 jobs:
-  "golang-1.9":
-    <<: *shared
-    docker:
-      - image: circleci/golang:1.9
-
   "golang-1.10":
     <<: *shared
     docker:
@@ -21,12 +16,27 @@ jobs:
   "golang-1.11":
     <<: *shared
     docker:
-      - image: circleci/golang:1.11-rc
+      - image: circleci/golang:1.11
+
+  "golang-1.12":
+    <<: *shared
+    docker:
+      - image: circleci/golang:1.12
+
+  integration:
+    working_directory: /go/src/github.com/uw-labs/go-onfido
+    steps:
+      - checkout
+      - run: go get -v -t -d -tags integration ./...
+      - run: go test -v -race -tags integration -onfidoToken=${ONFIDO_TOKEN}
+    docker:
+      - image: circleci/golang:1.12
 
 workflows:
   version: 2
   build:
     jobs:
-      - "golang-1.9"
       - "golang-1.10"
       - "golang-1.11"
+      - "golang-1.12"
+      - "integration"
