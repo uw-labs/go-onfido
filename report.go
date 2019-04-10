@@ -55,22 +55,6 @@ type Report struct {
 	Properties Properties             `json:"properties,omitempty"`
 }
 
-type Properties map[string]interface{}
-
-type Breakdowns map[string]Breakdown
-
-type Breakdown struct {
-	Result        string        `json:"result"`
-	SubBreakdowns SubBreakdowns `json:"breakdown"`
-}
-
-type SubBreakdowns map[string]SubBreakdown
-
-type SubBreakdown struct {
-	Result     string     `json:"result"`
-	Properties Properties `json:"properties"`
-}
-
 // Reports represents a list of reports from the Onfido API
 type Reports struct {
 	Reports []*Report `json:"reports"`
