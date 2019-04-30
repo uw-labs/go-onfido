@@ -51,8 +51,8 @@ type Report struct {
 	Variant    ReportVariant          `json:"variant,omitempty"`
 	Href       string                 `json:"href,omitempty"`
 	Options    map[string]interface{} `json:"options,omitempty"`
-	Breakdown  map[string]interface{} `json:"breakdown,omitempty"`
-	Properties map[string]interface{} `json:"properties,omitempty"`
+	Breakdown  Breakdowns             `json:"breakdown,omitempty"`
+	Properties Properties             `json:"properties,omitempty"`
 }
 
 // Reports represents a list of reports from the Onfido API
