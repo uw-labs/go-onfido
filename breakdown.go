@@ -1,8 +1,9 @@
 package onfido
 
 const (
-	BreakdownClear    BreakdownResult = "clear"
-	BreakdownConsider BreakdownResult = "consider"
+	BreakdownClear        BreakdownResult = "clear"
+	BreakdownConsider     BreakdownResult = "consider"
+	BreakdownUnidentified BreakdownResult = "unidentified"
 
 	SubBreakdownClear        BreakdownSubResult = "clear"
 	SubBreakdownConsider     BreakdownSubResult = "consider"
