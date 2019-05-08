@@ -41,7 +41,7 @@ func TestLivePhotos_List(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, _ = w.Write(expectedJson)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
