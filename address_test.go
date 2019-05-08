@@ -15,7 +15,8 @@ import (
 func TestPickAddresses_EmptyPostcode(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -34,7 +35,8 @@ func TestPickAddresses_EmptyPostcode(t *testing.T) {
 func TestPickAddresses_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -58,7 +60,7 @@ func TestPickAddresses_ApplicantsRetrieved(t *testing.T) {
 		Postcode:       "SAP POP",
 		Country:        "GBR",
 	}
-	expectedJson, err := json.Marshal(onfido.Addresses{
+	expectedJSON, err := json.Marshal(onfido.Addresses{
 		Addresses: []*onfido.Address{&expected},
 	})
 	if err != nil {
@@ -71,7 +73,8 @@ func TestPickAddresses_ApplicantsRetrieved(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()

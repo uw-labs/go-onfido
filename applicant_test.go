@@ -15,7 +15,8 @@ import (
 func TestCreateApplicant_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -35,7 +36,7 @@ func TestCreateApplicant_ApplicantCreated(t *testing.T) {
 		FirstName: "Foo",
 		LastName:  "Bar",
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -44,7 +45,8 @@ func TestCreateApplicant_ApplicantCreated(t *testing.T) {
 	m.HandleFunc("/applicants", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("POST")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -137,7 +139,7 @@ func TestGetApplicant_ValidRequest(t *testing.T) {
 		FirstName: "Foo",
 		LastName:  "Bar",
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -150,7 +152,8 @@ func TestGetApplicant_ValidRequest(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -172,7 +175,8 @@ func TestGetApplicant_ValidRequest(t *testing.T) {
 func TestListApplicants_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -195,7 +199,7 @@ func TestListApplicants_ApplicantsRetrieved(t *testing.T) {
 		FirstName: "Foo",
 		LastName:  "Bar",
 	}
-	expectedJson, err := json.Marshal(onfido.Applicants{
+	expectedJSON, err := json.Marshal(onfido.Applicants{
 		Applicants: []*onfido.Applicant{&expected},
 	})
 	if err != nil {
@@ -205,7 +209,8 @@ func TestListApplicants_ApplicantsRetrieved(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -267,7 +272,7 @@ func TestUpdateApplicant_ValidRequest(t *testing.T) {
 		FirstName: "Foo",
 		LastName:  "Bar",
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -280,7 +285,8 @@ func TestUpdateApplicant_ValidRequest(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("PUT")
 	srv := httptest.NewServer(m)
 	defer srv.Close()

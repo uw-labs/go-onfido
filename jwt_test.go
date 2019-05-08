@@ -16,7 +16,8 @@ import (
 func TestNewSdkToken_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -38,7 +39,7 @@ func TestNewSdkToken_ApplicantsRetrieved(t *testing.T) {
 		Referrer:    "https://*.uw-labs.co.uk/documentation/*",
 		Token:       "423423m4n234czxKJKDLF",
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,13 +47,14 @@ func TestNewSdkToken_ApplicantsRetrieved(t *testing.T) {
 	m := mux.NewRouter()
 	m.HandleFunc("/sdk_token", func(w http.ResponseWriter, r *http.Request) {
 		var tk onfido.SdkToken
-		json.NewDecoder(r.Body).Decode(&tk)
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&tk))
 		assert.Equal(t, expected.ApplicantID, tk.ApplicantID)
 		assert.Equal(t, expected.Referrer, tk.Referrer)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("POST")
 	srv := httptest.NewServer(m)
 	defer srv.Close()

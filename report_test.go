@@ -15,7 +15,8 @@ import (
 func TestGetReport_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -43,7 +44,7 @@ func TestGetReport_ReportRetrieved_Clear(t *testing.T) {
 			"issuing_country": "GBR",
 		},
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -56,7 +57,8 @@ func TestGetReport_ReportRetrieved_Clear(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -115,7 +117,7 @@ func TestGetReport_ReportRetrieved_Consider(t *testing.T) {
 			},
 		},
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -128,7 +130,8 @@ func TestGetReport_ReportRetrieved_Consider(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -165,7 +168,8 @@ func TestGetReport_ReportRetrieved_Consider(t *testing.T) {
 func TestResumeReport_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -180,13 +184,13 @@ func TestResumeReport_NonOKResponse(t *testing.T) {
 
 func TestResumeReport_ReportResumed(t *testing.T) {
 	checkID := "541d040b-89f8-444b-8921-16b1333bf1c6"
-	reportId := "ce62d838-56f8-4ea5-98be-e7166d1dc33d"
+	reportID := "ce62d838-56f8-4ea5-98be-e7166d1dc33d"
 
 	m := mux.NewRouter()
 	m.HandleFunc("/checks/{checkId}/reports/{reportId}/resume", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		assert.Equal(t, checkID, vars["checkId"])
-		assert.Equal(t, reportId, vars["reportId"])
+		assert.Equal(t, reportID, vars["reportId"])
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -197,7 +201,7 @@ func TestResumeReport_ReportResumed(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	err := client.ResumeReport(context.Background(), checkID, reportId)
+	err := client.ResumeReport(context.Background(), checkID, reportID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -206,7 +210,8 @@ func TestResumeReport_ReportResumed(t *testing.T) {
 func TestCancelReport_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -221,13 +226,13 @@ func TestCancelReport_NonOKResponse(t *testing.T) {
 
 func TestCancelReport_ReportResumed(t *testing.T) {
 	checkID := "541d040b-89f8-444b-8921-16b1333bf1c6"
-	reportId := "ce62d838-56f8-4ea5-98be-e7166d1dc33d"
+	reportID := "ce62d838-56f8-4ea5-98be-e7166d1dc33d"
 
 	m := mux.NewRouter()
 	m.HandleFunc("/checks/{checkId}/reports/{reportId}/cancel", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		assert.Equal(t, checkID, vars["checkId"])
-		assert.Equal(t, reportId, vars["reportId"])
+		assert.Equal(t, reportID, vars["reportId"])
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -238,7 +243,7 @@ func TestCancelReport_ReportResumed(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	err := client.CancelReport(context.Background(), checkID, reportId)
+	err := client.CancelReport(context.Background(), checkID, reportID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -247,7 +252,8 @@ func TestCancelReport_ReportResumed(t *testing.T) {
 func TestListReports_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -274,7 +280,7 @@ func TestListReports_ReportsRetrieved(t *testing.T) {
 		Variant:   onfido.ReportVariantStandard,
 		Href:      "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
 	}
-	expectedJson, err := json.Marshal(onfido.Reports{
+	expectedJSON, err := json.Marshal(onfido.Reports{
 		Reports: []*onfido.Report{&expected},
 	})
 	if err != nil {
@@ -288,7 +294,8 @@ func TestListReports_ReportsRetrieved(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()

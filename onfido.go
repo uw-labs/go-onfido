@@ -112,7 +112,7 @@ func (c *Client) newRequest(method, uri string, body io.Reader) (*http.Request, 
 }
 
 func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) (*http.Response, error) {
-	req.WithContext(ctx)
+	req = req.WithContext(ctx)
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		select {

@@ -15,7 +15,8 @@ import (
 func TestCreateCheck_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -49,7 +50,7 @@ func TestCreateCheck_CheckCreated(t *testing.T) {
 		},
 		Tags: []string{"my-tag"},
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -62,7 +63,8 @@ func TestCreateCheck_CheckCreated(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("POST")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -95,7 +97,8 @@ func TestCreateCheck_CheckCreated(t *testing.T) {
 func TestGetCheck_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -123,7 +126,7 @@ func TestGetCheck_CheckRetrieved(t *testing.T) {
 		Reports:     []string{"7410a943-8f00-43d8-98de-36a774196d86"},
 		Tags:        []string{"my-tag"},
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -136,7 +139,8 @@ func TestGetCheck_CheckRetrieved(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -176,7 +180,7 @@ func TestGetCheckExpanded_NoReports(t *testing.T) {
 		Reports:     []string{},
 		Tags:        []string{"my-tag"},
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -189,7 +193,8 @@ func TestGetCheckExpanded_NoReports(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -217,7 +222,8 @@ func TestGetCheckExpanded_NoReports(t *testing.T) {
 func TestGetCheckExpanded_NonOkResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -249,7 +255,7 @@ func TestGetCheckExpanded_HasReports(t *testing.T) {
 		Reports:     []string{report1ID, report2ID},
 		Tags:        []string{"my-tag"},
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -296,9 +302,11 @@ func TestGetCheckExpanded_HasReports(t *testing.T) {
 
 		switch vars["reportId"] {
 		case report1ID:
-			w.Write(expectedReport1Json)
+			_, wErr := w.Write(expectedReport1Json)
+			assert.NoError(t, wErr)
 		case report2ID:
-			w.Write(expectedReport2Json)
+			_, wErr := w.Write(expectedReport2Json)
+			assert.NoError(t, wErr)
 		}
 	}).Methods("GET")
 
@@ -310,7 +318,8 @@ func TestGetCheckExpanded_HasReports(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -355,7 +364,7 @@ func TestGetCheckExpanded_HasReports_NonOkResponse(t *testing.T) {
 		Reports:     []string{report1ID, report2ID},
 		Tags:        []string{"my-tag"},
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -387,10 +396,12 @@ func TestGetCheckExpanded_HasReports_NonOkResponse(t *testing.T) {
 		switch vars["reportId"] {
 		case report1ID:
 			w.WriteHeader(http.StatusOK)
-			w.Write(expectedReport1Json)
+			_, wErr := w.Write(expectedReport1Json)
+			assert.NoError(t, wErr)
 		case report2ID:
 			w.WriteHeader(http.StatusForbidden)
-			w.Write([]byte("{\"error\": \"things went bad\"}"))
+			_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+			assert.NoError(t, wErr)
 		}
 	}).Methods("GET")
 
@@ -402,7 +413,8 @@ func TestGetCheckExpanded_HasReports_NonOkResponse(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -419,7 +431,8 @@ func TestGetCheckExpanded_HasReports_NonOkResponse(t *testing.T) {
 func TestResumeCheck_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -437,7 +450,7 @@ func TestResumeCheck_CheckCreated(t *testing.T) {
 		ID:     "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Status: "in_progress",
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -450,7 +463,8 @@ func TestResumeCheck_CheckCreated(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("POST")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -470,7 +484,8 @@ func TestResumeCheck_CheckCreated(t *testing.T) {
 func TestListChecks_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -507,7 +522,7 @@ func TestListChecks_ChecksRetrieved(t *testing.T) {
 		},
 		Tags: []string{"my-tag"},
 	}
-	expectedJson, err := json.Marshal(onfido.Checks{
+	expectedJSON, err := json.Marshal(onfido.Checks{
 		Checks: []*onfido.Check{&expected},
 	})
 	if err != nil {
@@ -522,7 +537,8 @@ func TestListChecks_ChecksRetrieved(t *testing.T) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()

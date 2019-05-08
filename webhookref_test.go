@@ -15,7 +15,8 @@ import (
 func TestCreateWebhook_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -38,7 +39,7 @@ func TestCreateWebhook_WebhookCreated(t *testing.T) {
 		Environments: []onfido.WebhookEnvironment{onfido.WebhookEnvironmentSandbox, onfido.WebhookEnvironmentLive},
 		Events:       []onfido.WebhookEvent{onfido.WebhookEventCheckStarted, onfido.WebhookEventCheckCompleted},
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,7 +48,8 @@ func TestCreateWebhook_WebhookCreated(t *testing.T) {
 	m.HandleFunc("/webhooks", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("POST")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -77,7 +79,8 @@ func TestCreateWebhook_WebhookCreated(t *testing.T) {
 func TestListWebhooks_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -103,7 +106,7 @@ func TestListWebhooks_WebhooksRetrieved(t *testing.T) {
 		Environments: []onfido.WebhookEnvironment{onfido.WebhookEnvironmentSandbox, onfido.WebhookEnvironmentLive},
 		Events:       []onfido.WebhookEvent{onfido.WebhookEventCheckStarted, onfido.WebhookEventCheckCompleted},
 	}
-	expectedJson, err := json.Marshal(onfido.WebhookRefs{
+	expectedJSON, err := json.Marshal(onfido.WebhookRefs{
 		WebhookRefs: []*onfido.WebhookRef{&expected},
 	})
 	if err != nil {
@@ -113,7 +116,8 @@ func TestListWebhooks_WebhooksRetrieved(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
