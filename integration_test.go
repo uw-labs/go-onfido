@@ -109,7 +109,7 @@ func TestIntegrationUploadDocument_DocumentUploaded(t *testing.T) {
 		t.Skip("no applicant ID set, check applicant created test. skipping")
 	}
 
-	file, err := os.Open("./examples/id-card.jpg")
+	file, err := os.Open("./examples/upload-document/id-card.jpg")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -205,7 +205,7 @@ func getDefaultApplicant() *onfido.Applicant {
 }
 
 func getDefaultDocument() *onfido.DocumentRequest {
-	file, err := os.Open("./examples/id-card.jpg")
+	file, err := os.Open("./examples/upload-document/id-card.jpg")
 	if err != nil {
 		panic(err)
 	}
