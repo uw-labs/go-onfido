@@ -16,7 +16,8 @@ import (
 func TestUploadDocument_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -47,7 +48,7 @@ func TestUploadDocument_DocumentUploaded(t *testing.T) {
 		Type:         onfido.DocumentTypePassport,
 		Side:         onfido.DocumentSideBack,
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +60,8 @@ func TestUploadDocument_DocumentUploaded(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("POST")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -89,7 +91,8 @@ func TestUploadDocument_DocumentUploaded(t *testing.T) {
 func TestGetDocument_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -114,7 +117,7 @@ func TestGetDocument_DocumentRetrieved(t *testing.T) {
 		Type:         onfido.DocumentTypePassport,
 		Side:         onfido.DocumentSideBack,
 	}
-	expectedJson, err := json.Marshal(expected)
+	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -127,7 +130,8 @@ func TestGetDocument_DocumentRetrieved(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
@@ -153,7 +157,8 @@ func TestGetDocument_DocumentRetrieved(t *testing.T) {
 func TestListDocuments_NonOKResponse(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte("{\"error\": \"things went bad\"}"))
+		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
+		assert.NoError(t, wErr)
 	}))
 	defer srv.Close()
 
@@ -181,7 +186,7 @@ func TestListDocuments_DocumentsRetrieved(t *testing.T) {
 		Type:         onfido.DocumentTypePassport,
 		Side:         onfido.DocumentSideBack,
 	}
-	expectedJson, err := json.Marshal(onfido.Documents{
+	expectedJSON, err := json.Marshal(onfido.Documents{
 		Documents: []*onfido.Document{&expected},
 	})
 	if err != nil {
@@ -195,7 +200,8 @@ func TestListDocuments_DocumentsRetrieved(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(expectedJson)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
 	}).Methods("GET")
 	srv := httptest.NewServer(m)
 	defer srv.Close()
