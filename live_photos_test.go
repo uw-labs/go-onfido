@@ -3,13 +3,14 @@ package onfido_test
 import (
 	"context"
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"github.com/stretchr/testify/assert"
-	"github.com/uw-labs/go-onfido"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
+	"github.com/uw-labs/go-onfido"
 )
 
 func TestLivePhotos_List(t *testing.T) {
