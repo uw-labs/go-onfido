@@ -241,6 +241,27 @@ func TestDo_InvalidJsonResponse(t *testing.T) {
 	}
 }
 
+func Test_handleResponseErr(t *testing.T) {
+	response := http.Response{
+		Header: map[string][]string{"Content-Type": {"application/json"}},
+		Body: ioutil.NopCloser(bytes.NewReader([]byte(
+			`{
+				"error":{
+					"type":"validation_error",
+					"message":"There was a validation error on this request",
+					"fields":{"addresses":[{"street":["can't be longer than 32 characters"]}]}
+				}
+			}`))),
+	}
+	err := handleResponseErr(&response)
+	assert.Error(t, err)
+	assert.IsType(t, err, &Error{})
+	errT := err.(*Error)
+	assert.Len(t, errT.Err.Fields, 1)
+	assert.Contains(t, errT.Err.Fields, "addresses")
+	assert.IsType(t, errT.Err.Fields["addresses"], []interface{}{})
+}
+
 type stubbedHTTPClient struct {
 	resp *http.Response
 	err  error
