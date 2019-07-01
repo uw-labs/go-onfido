@@ -37,7 +37,7 @@ type HTTPRequester interface {
 type Error struct {
 	Resp *http.Response
 	// see https://documentation.onfido.com/#error-object
-	Err  struct {
+	Err struct {
 		ID     string      `json:"id"`
 		Type   string      `json:"type"`
 		Msg    string      `json:"message"`
