@@ -58,7 +58,7 @@ func TestParseFromRequest_InvalidSignature(t *testing.T) {
 		Header: make(map[string][]string),
 	}
 	req.Header.Add(onfido.WebhookSignatureHeader, "123")
-	req.Body = ioutil.NopCloser(bytes.NewBuffer([]byte("hello world")))
+	req.Body = ioutil.NopCloser(bytes.NewBuffer([]byte("{\"msg\": \"hello world\"}")))
 
 	wh := onfido.Webhook{Token: "abc123"}
 	_, err := wh.ParseFromRequest(req)
@@ -67,6 +67,19 @@ func TestParseFromRequest_InvalidSignature(t *testing.T) {
 	}
 	if err != onfido.ErrInvalidWebhookSignature {
 		t.Fatal("expected error to match ErrInvalidWebhookSignature")
+	}
+}
+
+func TestParseFromRequest_SkipSignatureValidation(t *testing.T) {
+	req := &http.Request{
+		Header: make(map[string][]string),
+	}
+	req.Body = ioutil.NopCloser(bytes.NewBuffer([]byte("{\"msg\": \"hello world\"}")))
+
+	wh := onfido.Webhook{Token: "abc123", SkipSignatureValidation: true}
+	_, err := wh.ParseFromRequest(req)
+	if err != nil {
+		t.Errorf("expected no error as signature validation should have been skipped: %s", err.Error())
 	}
 }
 
