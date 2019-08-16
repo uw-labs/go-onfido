@@ -8,6 +8,18 @@ shared: &shared
     - run: go test -v -race
 
 jobs:
+  lint:
+    working_directory: /go/src/github.com/uw-labs/go-onfido
+    docker:
+      - image: circleci/golang:1.12
+        environment:
+          GOLANGCI_VERSION: "v1.16.0"
+    steps:
+      - run: curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | bash -s ${GOLANGCI_VERSION}
+      - run: mv ./bin/golangci-lint $GOPATH/bin/ && rm -rf bin
+      - checkout
+      - run: go get -v -t -d ./...
+      - run: golangci-lint run --enable-all -D=lll,gochecknoglobals,gosec,goconst,gocritic
   "golang-1.10":
     <<: *shared
     docker:
@@ -36,6 +48,7 @@ workflows:
   version: 2
   build:
     jobs:
+      - "lint"
       - "golang-1.10"
       - "golang-1.11"
       - "golang-1.12"

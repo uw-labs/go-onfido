@@ -25,7 +25,8 @@ var (
 
 // Webhook represents a webhook handler
 type Webhook struct {
-	Token string
+	Token                   string
+	SkipSignatureValidation bool
 }
 
 // WebhookRequest represents an incoming webhook request from Onfido
@@ -84,8 +85,10 @@ func (wh *Webhook) ParseFromRequest(req *http.Request) (*WebhookRequest, error) 
 	}
 	defer req.Body.Close()
 
-	if err := wh.ValidateSignature(body, signature); err != nil {
-		return nil, err
+	if !wh.SkipSignatureValidation {
+		if err := wh.ValidateSignature(body, signature); err != nil {
+			return nil, err
+		}
 	}
 
 	var wr WebhookRequest

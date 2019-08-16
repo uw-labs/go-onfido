@@ -36,7 +36,8 @@ type HTTPRequester interface {
 // Error represents an Onfido API error response
 type Error struct {
 	Resp *http.Response
-	Err  struct {
+	// see https://documentation.onfido.com/#error-object
+	Err struct {
 		ID     string      `json:"id"`
 		Type   string      `json:"type"`
 		Msg    string      `json:"message"`
@@ -44,7 +45,8 @@ type Error struct {
 	} `json:"error"`
 }
 
-type ErrorFields map[string][]string
+// known shapes of the values are []string and map[string][]string for recursive field validation
+type ErrorFields map[string]interface{}
 
 func (e *Error) Error() string {
 	if e.Err.Msg != "" {
@@ -112,7 +114,7 @@ func (c *Client) newRequest(method, uri string, body io.Reader) (*http.Request, 
 }
 
 func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) (*http.Response, error) {
-	req.WithContext(ctx)
+	req = req.WithContext(ctx)
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		select {

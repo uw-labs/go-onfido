@@ -190,7 +190,7 @@ func TestDo_InvalidStatusCode_JsonParsed(t *testing.T) {
 			ID:   "123",
 			Type: "foo",
 			Msg:  "some msg",
-			Fields: map[string][]string{
+			Fields: map[string]interface{}{
 				"first_name": []string{"can't be blank"},
 				"last_name":  []string{"can't be blank", "is too short (minimum is 2 characters)"},
 			},
@@ -239,6 +239,27 @@ func TestDo_InvalidJsonResponse(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected to see an error after the body was unable to be parsed as JSON")
 	}
+}
+
+func Test_handleResponseErr(t *testing.T) {
+	response := http.Response{
+		Header: map[string][]string{"Content-Type": {"application/json"}},
+		Body: ioutil.NopCloser(bytes.NewReader([]byte(
+			`{
+				"error":{
+					"type":"validation_error",
+					"message":"There was a validation error on this request",
+					"fields":{"addresses":[{"street":["can't be longer than 32 characters"]}]}
+				}
+			}`))),
+	}
+	err := handleResponseErr(&response)
+	assert.Error(t, err)
+	assert.IsType(t, err, &Error{})
+	errT := err.(*Error)
+	assert.Len(t, errT.Err.Fields, 1)
+	assert.Contains(t, errT.Err.Fields, "addresses")
+	assert.IsType(t, errT.Err.Fields["addresses"], []interface{}{})
 }
 
 type stubbedHTTPClient struct {
