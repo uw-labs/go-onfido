@@ -35,19 +35,20 @@ func TestNewSdkToken_NonOKResponse(t *testing.T) {
 
 func TestNewSdkToken_ApplicantsRetrieved(t *testing.T) {
 	testCases := []onfido.SdkToken{
-		onfido.SdkToken{
+		{
 			ApplicantID: "klj25h2jk5j4k5jk35",
 			Referrer:    "https://*.uw-labs.co.uk/documentation/*",
 			Token:       "423423m4n234czxKJKDLF",
 		},
-		onfido.SdkToken{
+		{
 			ApplicantID:   "maf92h1qa5j4g3si34",
 			ApplicationID: "com.ios.application",
 			Token:         "534534m4n234czxQIKKLF",
 		},
 	}
 
-	for _, expected := range testCases {
+	for i := range testCases {
+		expected := testCases[i] // pinning demanded by golint!
 		expectedJSON, err := json.Marshal(expected)
 		if err != nil {
 			t.Fatal(err)
