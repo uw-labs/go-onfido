@@ -68,7 +68,8 @@ func (t Token) String() string {
 
 // Prod checks if this is a production token or not.
 func (t Token) Prod() bool {
-	return !strings.HasPrefix(string(t), "test_")
+	return !strings.HasPrefix(string(t), "test_") &&
+		!strings.HasPrefix(string(t), "api_sandbox.")
 }
 
 // NewClientFromEnv creates a new Onfido client using configuration
