@@ -21,6 +21,35 @@ const (
 	TokenEnv        = "ONFIDO_TOKEN"
 )
 
+type OnfidoClient interface {
+	SetHTTPClient(client HTTPRequester)
+	NewSdkToken(ctx context.Context, id, referrer string) (*SdkToken, error)
+	GetReport(ctx context.Context, checkID, id string) (*Report, error)
+	ResumeReport(ctx context.Context, checkID, id string) error
+	CancelReport(ctx context.Context, checkID, id string) error
+	ListReports(checkID string) *ReportIter
+	GetDocument(ctx context.Context, applicantID, id string) (*Document, error)
+	ListDocuments(applicantID string) *DocumentIter
+	UploadDocument(ctx context.Context, applicantID string, dr DocumentRequest) (*Document, error)
+	ListLivePhotos(applicantID string) *LivePhotoIter
+	CreateApplicant(ctx context.Context, a Applicant) (*Applicant, error)
+	DeleteApplicant(ctx context.Context, id string) error
+	GetApplicant(ctx context.Context, id string) (*Applicant, error)
+	ListApplicants() *ApplicantIter
+	UpdateApplicant(ctx context.Context, a Applicant) (*Applicant, error)
+	CreateCheck(ctx context.Context, applicantID string, cr CheckRequest) (*Check, error)
+	GetCheck(ctx context.Context, applicantID, id string) (*CheckRetrieved, error)
+	GetCheckExpanded(ctx context.Context, applicantID, id string) (*Check, error)
+	ResumeCheck(ctx context.Context, id string) (*Check, error)
+	ListChecks(applicantID string) *CheckIter
+	CreateWebhook(ctx context.Context, wr WebhookRefRequest) (*WebhookRef, error)
+	UpdateWebhook(ctx context.Context, id string, wr WebhookRefRequest) (*WebhookRef, error)
+	ListWebhooks() *WebhookRefIter
+	PickAddresses(postcode string) *PickerIter
+	GetResource(ctx context.Context, href string, v interface{}) error
+	Token() Token
+}
+
 // Client represents an Onfido API client
 type Client struct {
 	Endpoint   string

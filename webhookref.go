@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"net/http"
 )
 
 // WebhookEnvironment represents an environment type (see `WebhookEnvironment*` constants for possible values)
@@ -64,6 +65,24 @@ func (c *Client) CreateWebhook(ctx context.Context, wr WebhookRefRequest) (*Webh
 	}
 
 	req, err := c.newRequest("POST", "/webhooks", bytes.NewBuffer(jsonStr))
+	if err != nil {
+		return nil, err
+	}
+
+	var resp WebhookRef
+	_, err = c.do(ctx, req, &resp)
+	return &resp, err
+}
+
+// UpdateWebhook updates a previously created webhook.
+// https://documentation.onfido.com/v2/#edit-webhook
+func (c *client) UpdateWebhook(ctx context.Context, id string, wr WebhookRefRequest) (*WebhookRef, error) {
+	jsonStr, err := json.Marshal(wr)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := c.newRequest(http.MethodPut, "/webhooks/"+id, bytes.NewBuffer(jsonStr))
 	if err != nil {
 		return nil, err
 	}
