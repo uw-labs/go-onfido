@@ -49,6 +49,8 @@ func TestToken_IsProd(t *testing.T) {
 		{"prod_122333", true},
 		{"122333", true},
 		{"test_122333", false},
+		{"api_live.122333", true},
+		{"api_sandbox.122333", false},
 	}
 
 	for _, expected := range tokens {
