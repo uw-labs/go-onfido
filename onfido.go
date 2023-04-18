@@ -50,6 +50,9 @@ type ErrorFields map[string]interface{}
 
 func (e *Error) Error() string {
 	if e.Err.Msg != "" {
+		if len(e.Err.Fields) > 0 {
+			return fmt.Sprintf("%s: %q", e.Err.Msg, e.Err.Fields)
+		}
 		return e.Err.Msg
 	}
 	if e.Resp != nil {

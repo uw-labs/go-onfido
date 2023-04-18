@@ -18,8 +18,15 @@ import (
 func TestError_MsgSet(t *testing.T) {
 	err := Error{}
 	err.Err.Msg = "some error message"
-	if err.Error() != err.Err.Msg {
-		t.Fatal()
+	if err.Error() != "some error message" {
+		t.Fatal(err.Error())
+	}
+
+	err = Error{}
+	err.Err.Msg = "some error message"
+	err.Err.Fields = ErrorFields{"key": []string{"value"}}
+	if err.Error() != "some error message: map[\"key\":[\"value\"]]" {
+		t.Fatal(err.Error())
 	}
 }
 
