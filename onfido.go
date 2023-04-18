@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -154,7 +155,13 @@ func handleResponseErr(resp *http.Response) error {
 	var onfidoErr Error
 	if resp.Body != nil && isJSONResponse(resp) {
 		defer resp.Body.Close()
-		if err := json.NewDecoder(resp.Body).Decode(&onfidoErr); err != nil {
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+
+		log.Print("error response", body)
+		if err = json.Unmarshal(body, &onfidoErr); err != nil {
 			return err
 		}
 	} else {
