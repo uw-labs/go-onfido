@@ -25,12 +25,13 @@ func TestUploadDocument_NonOKResponse(t *testing.T) {
 	client.Endpoint = srv.URL
 
 	docReq := onfido.DocumentRequest{
-		File: bytes.NewReader([]byte("test")),
-		Type: onfido.DocumentTypeIDCard,
-		Side: onfido.DocumentSideFront,
+		File:        bytes.NewReader([]byte("test")),
+		Type:        onfido.DocumentTypeIDCard,
+		Side:        onfido.DocumentSideFront,
+		ApplicantID: "test-applicant",
 	}
 
-	_, err := client.UploadDocument(context.Background(), "", docReq)
+	_, err := client.UploadDocument(context.Background(), docReq)
 	if err == nil {
 		t.Fatal("expected server to return non ok response, got successful response")
 	}
@@ -54,9 +55,7 @@ func TestUploadDocument_DocumentUploaded(t *testing.T) {
 	}
 
 	m := mux.NewRouter()
-	m.HandleFunc("/applicants/{applicantId}/documents", func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		assert.Equal(t, applicantID, vars["applicantId"])
+	m.HandleFunc("/documents", func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -69,10 +68,11 @@ func TestUploadDocument_DocumentUploaded(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	d, err := client.UploadDocument(context.Background(), applicantID, onfido.DocumentRequest{
-		File: bytes.NewReader([]byte("test")),
-		Type: expected.Type,
-		Side: expected.Side,
+	d, err := client.UploadDocument(context.Background(), onfido.DocumentRequest{
+		File:        bytes.NewReader([]byte("test")),
+		Type:        expected.Type,
+		Side:        expected.Side,
+		ApplicantID: applicantID,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -99,14 +99,13 @@ func TestGetDocument_NonOKResponse(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	_, err := client.GetDocument(context.Background(), "", "")
+	_, err := client.GetDocument(context.Background(), "")
 	if err == nil {
 		t.Fatal("expected server to return non ok response, got successful response")
 	}
 }
 
 func TestGetDocument_DocumentRetrieved(t *testing.T) {
-	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
 	expected := onfido.Document{
 		ID:           "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Href:         "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
@@ -123,9 +122,8 @@ func TestGetDocument_DocumentRetrieved(t *testing.T) {
 	}
 
 	m := mux.NewRouter()
-	m.HandleFunc("/applicants/{applicantId}/documents/{documentId}", func(w http.ResponseWriter, r *http.Request) {
+	m.HandleFunc("/documents/{documentId}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		assert.Equal(t, applicantID, vars["applicantId"])
 		assert.Equal(t, expected.ID, vars["documentId"])
 
 		w.Header().Set("Content-Type", "application/json")
@@ -139,7 +137,7 @@ func TestGetDocument_DocumentRetrieved(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	d, err := client.GetDocument(context.Background(), applicantID, expected.ID)
+	d, err := client.GetDocument(context.Background(), expected.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -194,9 +192,7 @@ func TestListDocuments_DocumentsRetrieved(t *testing.T) {
 	}
 
 	m := mux.NewRouter()
-	m.HandleFunc("/applicants/{applicantId}/documents", func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		assert.Equal(t, applicantID, vars["applicantId"])
+	m.HandleFunc("/documents", func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
