@@ -23,7 +23,7 @@ func TestCreateCheck_NonOKResponse(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	_, err := client.CreateCheck(context.Background(), "", onfido.CheckRequest{})
+	_, err := client.CreateCheck(context.Background(), onfido.CheckRequest{})
 	if err == nil {
 		t.Fatal("expected server to return non ok response, got successful response")
 	}
@@ -56,11 +56,7 @@ func TestCreateCheck_CheckCreated(t *testing.T) {
 	}
 
 	m := mux.NewRouter()
-	m.HandleFunc("/applicants/{id}/checks", func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		if vars["id"] != applicantID {
-			t.Fatal("expected applicant id was not in the request")
-		}
+	m.HandleFunc("/checks", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, wErr := w.Write(expectedJSON)
@@ -72,12 +68,14 @@ func TestCreateCheck_CheckCreated(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	c, err := client.CreateCheck(context.Background(), applicantID, onfido.CheckRequest{
-		Type:              expected.Type,
-		RedirectURI:       expected.RedirectURI,
-		Reports:           expected.Reports,
-		Tags:              expected.Tags,
-		SupressFormEmails: true,
+	c, err := client.CreateCheck(context.Background(), onfido.CheckRequest{
+		ApplicantID:           applicantID,
+		ReportNames:           []onfido.ReportName{onfido.ReportNameDocument},
+		RedirectURI:           expected.RedirectURI,
+		Tags:                  expected.Tags,
+		SupressFormEmails:     true,
+		ApplicantProvidesData: true,
+		Asynchronous:          true,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -105,14 +103,13 @@ func TestGetCheck_NonOKResponse(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	_, err := client.GetCheck(context.Background(), "", "")
+	_, err := client.GetCheck(context.Background(), "")
 	if err == nil {
 		t.Fatal("expected server to return non ok response, got successful response")
 	}
 }
 
 func TestGetCheck_CheckRetrieved(t *testing.T) {
-	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
 	expected := onfido.CheckRetrieved{
 		ID:          "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Href:        "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
@@ -132,9 +129,8 @@ func TestGetCheck_CheckRetrieved(t *testing.T) {
 	}
 
 	m := mux.NewRouter()
-	m.HandleFunc("/applicants/{applicantId}/checks/{checkId}", func(w http.ResponseWriter, r *http.Request) {
+	m.HandleFunc("/checks/{checkId}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		assert.Equal(t, applicantID, vars["applicantId"])
 		assert.Equal(t, expected.ID, vars["checkId"])
 
 		w.Header().Set("Content-Type", "application/json")
@@ -148,7 +144,7 @@ func TestGetCheck_CheckRetrieved(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	c, err := client.GetCheck(context.Background(), applicantID, expected.ID)
+	c, err := client.GetCheck(context.Background(), expected.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -166,7 +162,6 @@ func TestGetCheck_CheckRetrieved(t *testing.T) {
 }
 
 func TestGetCheckExpanded_NoReports(t *testing.T) {
-	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
 	expected := onfido.CheckRetrieved{
 		ID:          "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Href:        "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
@@ -186,9 +181,8 @@ func TestGetCheckExpanded_NoReports(t *testing.T) {
 	}
 
 	m := mux.NewRouter()
-	m.HandleFunc("/applicants/{applicantId}/checks/{checkId}", func(w http.ResponseWriter, r *http.Request) {
+	m.HandleFunc("/checks/{checkId}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		assert.Equal(t, applicantID, vars["applicantId"])
 		assert.Equal(t, expected.ID, vars["checkId"])
 
 		w.Header().Set("Content-Type", "application/json")
@@ -202,7 +196,7 @@ func TestGetCheckExpanded_NoReports(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	c, err := client.GetCheckExpanded(context.Background(), applicantID, expected.ID)
+	c, err := client.GetCheckExpanded(context.Background(), expected.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -230,14 +224,13 @@ func TestGetCheckExpanded_NonOkResponse(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	_, err := client.GetCheckExpanded(context.Background(), "", "")
+	_, err := client.GetCheckExpanded(context.Background(), "")
 	if err == nil {
 		t.Fatal("expected server to return non ok response, got successful response")
 	}
 }
 
 func TestGetCheckExpanded_HasReports(t *testing.T) {
-	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
 	checkID := "ce62d838-56f8-4ea5-98be-e7166d1dc33d"
 	report1ID := "1fd6fec0-456f-443a-b75d-b048f47c34f7"
 	report2ID := "6ec6c029-469e-4c9e-91f3-beeb3fbc175e"
@@ -267,7 +260,6 @@ func TestGetCheckExpanded_HasReports(t *testing.T) {
 		Status:    "complete",
 		Result:    onfido.ReportResultClear,
 		SubResult: onfido.ReportSubResultClear,
-		Variant:   onfido.ReportVariantStandard,
 		Href:      "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
 	}
 	expectedReport1Json, err := json.Marshal(expectedReport1)
@@ -282,7 +274,6 @@ func TestGetCheckExpanded_HasReports(t *testing.T) {
 		Status:    "complete",
 		Result:    onfido.ReportResultClear,
 		SubResult: onfido.ReportSubResultClear,
-		Variant:   onfido.ReportVariantStandard,
 		Href:      "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
 	}
 	expectedReport2Json, err := json.Marshal(expectedReport2)
@@ -292,9 +283,8 @@ func TestGetCheckExpanded_HasReports(t *testing.T) {
 
 	m := mux.NewRouter()
 	// Return the requested Report
-	m.HandleFunc("/checks/{checkId}/reports/{reportId}", func(w http.ResponseWriter, r *http.Request) {
+	m.HandleFunc("/reports/{reportId}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		assert.Equal(t, checkID, vars["checkId"])
 		assert.Contains(t, expected.Reports, vars["reportId"])
 
 		w.Header().Set("Content-Type", "application/json")
@@ -311,9 +301,8 @@ func TestGetCheckExpanded_HasReports(t *testing.T) {
 	}).Methods("GET")
 
 	// Return the requested Check
-	m.HandleFunc("/applicants/{applicantId}/checks/{checkId}", func(w http.ResponseWriter, r *http.Request) {
+	m.HandleFunc("/checks/{checkId}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		assert.Equal(t, applicantID, vars["applicantId"])
 		assert.Equal(t, expected.ID, vars["checkId"])
 
 		w.Header().Set("Content-Type", "application/json")
@@ -327,7 +316,7 @@ func TestGetCheckExpanded_HasReports(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	c, err := client.GetCheckExpanded(context.Background(), applicantID, expected.ID)
+	c, err := client.GetCheckExpanded(context.Background(), expected.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -346,7 +335,6 @@ func TestGetCheckExpanded_HasReports(t *testing.T) {
 }
 
 func TestGetCheckExpanded_HasReports_NonOkResponse(t *testing.T) {
-	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
 	checkID := "ce62d838-56f8-4ea5-98be-e7166d1dc33d"
 	report1ID := "1fd6fec0-456f-443a-b75d-b048f47c34f7"
 	report2ID := "returns-error-status"
@@ -376,7 +364,6 @@ func TestGetCheckExpanded_HasReports_NonOkResponse(t *testing.T) {
 		Status:    "complete",
 		Result:    onfido.ReportResultClear,
 		SubResult: onfido.ReportSubResultClear,
-		Variant:   onfido.ReportVariantStandard,
 		Href:      "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
 	}
 	expectedReport1Json, err := json.Marshal(expectedReport1)
@@ -386,9 +373,8 @@ func TestGetCheckExpanded_HasReports_NonOkResponse(t *testing.T) {
 
 	m := mux.NewRouter()
 	// Return the requested Report
-	m.HandleFunc("/checks/{checkId}/reports/{reportId}", func(w http.ResponseWriter, r *http.Request) {
+	m.HandleFunc("/reports/{reportId}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		assert.Equal(t, checkID, vars["checkId"])
 		assert.Contains(t, expected.Reports, vars["reportId"])
 
 		w.Header().Set("Content-Type", "application/json")
@@ -406,9 +392,8 @@ func TestGetCheckExpanded_HasReports_NonOkResponse(t *testing.T) {
 	}).Methods("GET")
 
 	// Return the requested Check
-	m.HandleFunc("/applicants/{applicantId}/checks/{checkId}", func(w http.ResponseWriter, r *http.Request) {
+	m.HandleFunc("/checks/{checkId}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		assert.Equal(t, applicantID, vars["applicantId"])
 		assert.Equal(t, expected.ID, vars["checkId"])
 
 		w.Header().Set("Content-Type", "application/json")
@@ -422,7 +407,7 @@ func TestGetCheckExpanded_HasReports_NonOkResponse(t *testing.T) {
 	client := onfido.NewClient("123")
 	client.Endpoint = srv.URL
 
-	_, err = client.GetCheckExpanded(context.Background(), applicantID, expected.ID)
+	_, err = client.GetCheckExpanded(context.Background(), expected.ID)
 	if err == nil {
 		t.Fatal("expected server to return non ok response, got successful response")
 	}
@@ -530,9 +515,9 @@ func TestListChecks_ChecksRetrieved(t *testing.T) {
 	}
 
 	m := mux.NewRouter()
-	m.HandleFunc("/applicants/{id}/checks", func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		if vars["id"] != applicantID {
+	m.HandleFunc("/checks", func(w http.ResponseWriter, r *http.Request) {
+		applicantIDParam := r.URL.Query().Get("applicant_id")
+		if applicantIDParam != applicantID {
 			t.Fatal("expected applicant id was not in the request")
 		}
 		w.Header().Set("Content-Type", "application/json")
