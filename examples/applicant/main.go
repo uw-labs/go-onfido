@@ -21,17 +21,23 @@ func main() {
 		Email:     "rcrowe@example.co.uk",
 		FirstName: "Rob",
 		LastName:  "Crowe",
-		Addresses: []onfido.Address{
-			{
-				BuildingNumber: "18",
-				Street:         "Wind Corner",
-				Town:           "Crawley",
-				State:          "West Sussex",
-				Postcode:       "NW9 5AB",
-				Country:        "GBR",
-				StartDate:      "2018-02-10",
-			},
+		DOB:       "1990-01-31",
+		Location:  "GBR", // New mandatory field for v3.4+
+		Address: &onfido.Address{ // Now single address instead of array
+			BuildingNumber: "18",
+			Street:         "Wind Corner",
+			Town:           "Crawley",
+			State:          "West Sussex",
+			Postcode:       "NW9 5AB",
+			Country:        "GBR",
 		},
+		// For US applicants, consents are mandatory:
+		// Consents: []onfido.Consent{
+		// 	{
+		// 		Name:    string(onfido.ConsentPrivacyNoticesRead),
+		// 		Granted: true,
+		// 	},
+		// },
 	})
 	if err != nil {
 		panic(err)
