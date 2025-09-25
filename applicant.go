@@ -27,13 +27,11 @@ type IDNumber struct {
 	StateCode string       `json:"state_code,omitempty"`
 }
 
-// Consent represents consent given by an applicant (required for US applicants from v3.4)
+// Consent represents consent given by an applicant
 type Consent struct {
-	Name          string `json:"name"`
-	GrantedVia    string `json:"granted_via"`
-	GrantedAt     string `json:"granted_at"`
-	ConsentedID   string `json:"consented_id,omitempty"`
-	ConsentedName string `json:"consented_name,omitempty"`
+	Name      string `json:"name"`
+	Granted   bool   `json:"granted"`
+	GrantedAt string `json:"granted_at,omitempty"`
 }
 
 // Applicants represents a list of applicants from the Onfido API
