@@ -20,6 +20,15 @@ const (
 	IDNumberTypeDrivingLicense  IDNumberType = "driving_license"
 )
 
+// ConsentName represents the type of consent given by an applicant
+type ConsentName string
+
+// Supported consent types for US applicants
+const (
+	ConsentPrivacyNoticesRead ConsentName = "privacy_notices_read"
+	ConsentSSNVerification    ConsentName = "ssn_verification"
+)
+
 // IDNumber represents an ID number from the Onfido API
 type IDNumber struct {
 	Type      IDNumberType `json:"type,omitempty"`

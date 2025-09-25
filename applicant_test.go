@@ -106,7 +106,12 @@ func TestCreateApplicant_WithV36RequiredFields(t *testing.T) {
 		},
 		Consents: []onfido.Consent{
 			{
-				Name:      "privacy_notices_read",
+				Name:      string(onfido.ConsentPrivacyNoticesRead),
+				Granted:   true,
+				GrantedAt: "2023-09-25T10:30:00Z",
+			},
+			{
+				Name:      string(onfido.ConsentSSNVerification),
 				Granted:   true,
 				GrantedAt: "2023-09-25T10:30:00Z",
 			},
@@ -151,9 +156,11 @@ func TestCreateApplicant_WithV36RequiredFields(t *testing.T) {
 	assert.NotNil(t, a.Address, "Address should not be nil")
 	assert.Equal(t, expected.Address.Country, a.Address.Country)
 	assert.Equal(t, expected.Address.BuildingNumber, a.Address.BuildingNumber)
-	assert.Len(t, a.Consents, 1, "Should have 1 consent entry")
+	assert.Len(t, a.Consents, 2, "Should have 2 consent entries")
 	assert.Equal(t, expected.Consents[0].Name, a.Consents[0].Name)
 	assert.Equal(t, expected.Consents[0].Granted, a.Consents[0].Granted)
+	assert.Equal(t, expected.Consents[1].Name, a.Consents[1].Name)
+	assert.Equal(t, expected.Consents[1].Granted, a.Consents[1].Granted)
 }
 
 func TestCreateApplicant_LocationValidation(t *testing.T) {
@@ -286,7 +293,7 @@ func TestGetApplicant_ValidRequest(t *testing.T) {
 		},
 		Consents: []onfido.Consent{
 			{
-				Name:      "privacy_notices_read",
+				Name:      string(onfido.ConsentPrivacyNoticesRead),
 				Granted:   true,
 				GrantedAt: "2023-01-01T12:00:00Z",
 			},
@@ -444,7 +451,7 @@ func TestUpdateApplicant_ValidRequest(t *testing.T) {
 		},
 		Consents: []onfido.Consent{
 			{
-				Name:      "privacy_notices_read",
+				Name:      string(onfido.ConsentPrivacyNoticesRead),
 				Granted:   true,
 				GrantedAt: "2023-06-15T14:30:00Z",
 			},
