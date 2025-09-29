@@ -6,7 +6,7 @@ Client for the [Onfido API](https://documentation.onfido.com/)
 
 > This library was built for Utility Warehouse internal projects, so priority was given to supporting the
 features we needed. If the library is missing a feature from the API, raise an issue or ideally open a PR, 
-however please understand that this library is not expected to recieve any ongoing support unless required by
+however please understand that this library is not expected to receive any ongoing support unless required by
 Utility Warehouse.
 
 ## Installation
