@@ -36,7 +36,9 @@ func TestCreateApplicant_ApplicantCreated(t *testing.T) {
 		FirstName: "Foo",
 		LastName:  "Bar",
 		DOB:       "1990-01-31",
-		Location:  "GBR",
+		Location: onfido.Location{
+			CountryOfResidence: "GBR",
+		},
 		Address: &onfido.Address{ // Now single address instead of array
 			BuildingNumber: "18",
 			Street:         "Wind Corner",
@@ -95,7 +97,9 @@ func TestCreateApplicant_WithV36RequiredFields(t *testing.T) {
 		FirstName: "John",
 		LastName:  "Doe",
 		DOB:       "1985-05-15",
-		Location:  "USA",
+		Location: onfido.Location{
+			CountryOfResidence: "USA",
+		},
 		Address: &onfido.Address{
 			BuildingNumber: "123",
 			Street:         "Main Street",
@@ -169,7 +173,9 @@ func TestCreateApplicant_LocationValidation(t *testing.T) {
 		ID:        "test-location-123",
 		FirstName: "John",
 		LastName:  "Doe",
-		Location:  "GBR",
+		Location: onfido.Location{
+			CountryOfResidence: "GBR",
+		},
 		Address: &onfido.Address{
 			Country: "GBR",
 			Town:    "London",
@@ -205,7 +211,7 @@ func TestCreateApplicant_LocationValidation(t *testing.T) {
 	}
 
 	assert.Equal(t, expected.Location, a.Location)
-	assert.Equal(t, "GBR", a.Location, "Location should be set to GBR")
+	assert.Equal(t, "GBR", a.Location.CountryOfResidence, "Location country should be set to GBR")
 }
 
 func TestDeleteApplicant_NonOKResponse(t *testing.T) {
@@ -279,7 +285,9 @@ func TestGetApplicant_ValidRequest(t *testing.T) {
 		LastName:  "Bar",
 		Email:     "test@example.com",
 		DOB:       "1980-01-01",
-		Location:  "USA",
+		Location: onfido.Location{
+			CountryOfResidence: "USA",
+		},
 		Address: &onfido.Address{
 			FlatNumber:     "Apt 4",
 			BuildingName:   "Example Building",
@@ -441,7 +449,9 @@ func TestUpdateApplicant_ValidRequest(t *testing.T) {
 		LastName:  "Bar",
 		Email:     "updated@example.com",
 		DOB:       "1985-06-15",
-		Location:  "GBR",
+		Location: onfido.Location{
+			CountryOfResidence: "GBR",
+		},
 		Address: &onfido.Address{
 			BuildingNumber: "456",
 			Street:         "Updated Street",
