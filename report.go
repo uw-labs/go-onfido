@@ -9,10 +9,15 @@ import (
 // Supported report names, results, subresults
 const (
 	ReportNameDocument                              ReportName = "document"
+	ReportNameDocumentVideo                         ReportName = "document_video"
 	ReportNameDocumentWithAddressInformation        ReportName = "document_with_address_information"
+	ReportNameDocumentVideoWithAddressInformation   ReportName = "document_video_with_address_information"
 	ReportNameDocumentWithDrivingLicenceInformation ReportName = "document_with_driving_licence_information"
+	ReportNameDocumentWithDriverVerification        ReportName = "document_with_driver_verification"
 	ReportNameFacialSimilarityPhoto                 ReportName = "facial_similarity_photo"
+	ReportNameFacialSimilarityPhotoFullyAuto        ReportName = "facial_similarity_photo_fully_auto"
 	ReportNameFacialSimilarityVideo                 ReportName = "facial_similarity_video"
+	ReportNameFacialSimilarityMotion                ReportName = "facial_similarity_motion"
 	ReportNameKnownFaces                            ReportName = "known_faces"
 	ReportNameIdentityEnhanced                      ReportName = "identity_enhanced"
 	ReportNameWatchlistEnhanced                     ReportName = "watchlist_enhanced"
@@ -21,6 +26,9 @@ const (
 	ReportNameWatchlistPepsOnly                     ReportName = "watchlist_peps_only"
 	ReportNameWatchlistSanctionsOnly                ReportName = "watchlist_sanctions_only"
 	ReportNameProofOfAddress                        ReportName = "proof_of_address"
+	ReportNameUSDriversLicence                      ReportName = "us_driving_licence"
+	ReportNameDeviceIntelligence                    ReportName = "device_intelligence"
+	ReportNameIndiaPAN                              ReportName = "india_pan"
 
 	ReportResultClear        ReportResult = "clear"
 	ReportResultConsider     ReportResult = "consider"
