@@ -43,6 +43,12 @@ type Consent struct {
 	GrantedAt string `json:"granted_at,omitempty"`
 }
 
+// Location struct represents location information for an applicant
+type Location struct {
+	IPAddress          string `json:"ip_address,omitempty"`
+	CountryOfResidence string `json:"country_of_residence,omitempty"`
+}
+
 // Applicants represents a list of applicants from the Onfido API
 type Applicants struct {
 	Applicants []*Applicant `json:"applicants"`
@@ -61,7 +67,7 @@ type Applicant struct {
 	DOB        string     `json:"dob,omitempty"`
 	IDNumbers  []IDNumber `json:"id_numbers,omitempty"`
 	Address    *Address   `json:"address,omitempty"`
-	Location   string     `json:"location,omitempty"`
+	Location   Location   `json:"location,omitempty"`
 	Consents   []Consent  `json:"consents,omitempty"`
 }
 
