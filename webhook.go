@@ -35,10 +35,11 @@ type WebhookRequest struct {
 		ResourceType string `json:"resource_type"`
 		Action       string `json:"action"`
 		Object       struct {
-			ID          string `json:"id"`
-			Status      string `json:"status"`
-			CompletedAt string `json:"completed_at"`
-			Href        string `json:"href"`
+			ID                 string `json:"id"`
+			Status             string `json:"status"`
+			CompletedAt        string `json:"completed_at"`         // Deprecated in v3, use CompletedAtISO8601
+			CompletedAtISO8601 string `json:"completed_at_iso8601"` // New in v3
+			Href               string `json:"href"`
 		} `json:"object"`
 	} `json:"payload"`
 }

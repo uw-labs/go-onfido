@@ -23,10 +23,11 @@ func main() {
 	}
 	defer doc.Close()
 
-	document, err := client.UploadDocument(ctx, applicantID, onfido.DocumentRequest{
-		File: doc,
-		Type: onfido.DocumentTypeIDCard,
-		Side: onfido.DocumentSideFront,
+	document, err := client.UploadDocument(ctx, onfido.DocumentRequest{
+		File:        doc,
+		Type:        onfido.DocumentTypeIDCard,
+		Side:        onfido.DocumentSideFront,
+		ApplicantID: applicantID, // Required in v3 as documents are no longer nested under applicants
 	})
 	if err != nil {
 		panic(err)

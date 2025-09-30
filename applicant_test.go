@@ -35,6 +35,19 @@ func TestCreateApplicant_ApplicantCreated(t *testing.T) {
 		Title:     "Mr",
 		FirstName: "Foo",
 		LastName:  "Bar",
+		DOB:       "1990-01-31",
+		Location: onfido.Location{
+			CountryOfResidence: "GBR",
+		},
+		Address: &onfido.Address{ // Now single address instead of array
+			BuildingNumber: "18",
+			Street:         "Wind Corner",
+			Town:           "Crawley",
+			State:          "West Sussex",
+			Postcode:       "NW9 5AB",
+			Country:        "GBR",
+		},
+		Consents: nil,
 	}
 	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
@@ -58,6 +71,10 @@ func TestCreateApplicant_ApplicantCreated(t *testing.T) {
 		Title:     expected.Title,
 		FirstName: expected.FirstName,
 		LastName:  expected.LastName,
+		DOB:       expected.DOB,
+		Location:  expected.Location,
+		Address:   expected.Address,
+		Consents:  expected.Consents,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -67,6 +84,134 @@ func TestCreateApplicant_ApplicantCreated(t *testing.T) {
 	assert.Equal(t, expected.Title, a.Title)
 	assert.Equal(t, expected.FirstName, a.FirstName)
 	assert.Equal(t, expected.LastName, a.LastName)
+	assert.Equal(t, expected.DOB, a.DOB)
+	assert.Equal(t, expected.Location, a.Location)
+	assert.Equal(t, expected.Address, a.Address)
+	assert.Equal(t, expected.Consents, a.Consents)
+}
+
+func TestCreateApplicant_WithV36RequiredFields(t *testing.T) {
+	// Test specifically for v3.6 required fields: Location and Consents for US applicants
+	expected := onfido.Applicant{
+		ID:        "v36-test-id",
+		FirstName: "John",
+		LastName:  "Doe",
+		DOB:       "1985-05-15",
+		Location: onfido.Location{
+			CountryOfResidence: "USA",
+		},
+		Address: &onfido.Address{
+			BuildingNumber: "123",
+			Street:         "Main Street",
+			Town:           "New York",
+			State:          "NY",
+			Postcode:       "10001",
+			Country:        "USA",
+		},
+		Consents: []onfido.Consent{
+			{
+				Name:      string(onfido.ConsentPrivacyNoticesRead),
+				Granted:   true,
+				GrantedAt: "2023-09-25T10:30:00Z",
+			},
+			{
+				Name:      string(onfido.ConsentSSNVerification),
+				Granted:   true,
+				GrantedAt: "2023-09-25T10:30:00Z",
+			},
+		},
+	}
+	expectedJSON, err := json.Marshal(expected)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m := mux.NewRouter()
+	m.HandleFunc("/applicants", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
+	}).Methods("POST")
+	srv := httptest.NewServer(m)
+	defer srv.Close()
+
+	client := onfido.NewClient("123")
+	client.Endpoint = srv.URL
+
+	a, err := client.CreateApplicant(context.Background(), onfido.Applicant{
+		FirstName: expected.FirstName,
+		LastName:  expected.LastName,
+		DOB:       expected.DOB,
+		Location:  expected.Location,
+		Address:   expected.Address,
+		Consents:  expected.Consents,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Verify all v3.6 fields are properly handled
+	assert.Equal(t, expected.ID, a.ID)
+	assert.Equal(t, expected.FirstName, a.FirstName)
+	assert.Equal(t, expected.LastName, a.LastName)
+	assert.Equal(t, expected.DOB, a.DOB)
+	assert.Equal(t, expected.Location, a.Location)
+	assert.NotNil(t, a.Address, "Address should not be nil")
+	assert.Equal(t, expected.Address.Country, a.Address.Country)
+	assert.Equal(t, expected.Address.BuildingNumber, a.Address.BuildingNumber)
+	assert.Len(t, a.Consents, 2, "Should have 2 consent entries")
+	assert.Equal(t, expected.Consents[0].Name, a.Consents[0].Name)
+	assert.Equal(t, expected.Consents[0].Granted, a.Consents[0].Granted)
+	assert.Equal(t, expected.Consents[1].Name, a.Consents[1].Name)
+	assert.Equal(t, expected.Consents[1].Granted, a.Consents[1].Granted)
+}
+
+func TestCreateApplicant_LocationValidation(t *testing.T) {
+	// Test that Location field is properly handled in v3.6
+	expected := onfido.Applicant{
+		ID:        "test-location-123",
+		FirstName: "John",
+		LastName:  "Doe",
+		Location: onfido.Location{
+			CountryOfResidence: "GBR",
+		},
+		Address: &onfido.Address{
+			Country: "GBR",
+			Town:    "London",
+		},
+	}
+
+	expectedJSON, err := json.Marshal(expected)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	m := mux.NewRouter()
+	m.HandleFunc("/applicants", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_, wErr := w.Write(expectedJSON)
+		assert.NoError(t, wErr)
+	}).Methods("POST")
+	srv := httptest.NewServer(m)
+	defer srv.Close()
+
+	client := onfido.NewClient("123")
+	client.Endpoint = srv.URL
+
+	a, err := client.CreateApplicant(context.Background(), onfido.Applicant{
+		FirstName: expected.FirstName,
+		LastName:  expected.LastName,
+		Location:  expected.Location,
+		Address:   expected.Address,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	assert.Equal(t, expected.Location, a.Location)
+	assert.Equal(t, "GBR", a.Location.CountryOfResidence, "Location country should be set to GBR")
 }
 
 func TestDeleteApplicant_NonOKResponse(t *testing.T) {
@@ -138,6 +283,29 @@ func TestGetApplicant_ValidRequest(t *testing.T) {
 		Title:     "Mr",
 		FirstName: "Foo",
 		LastName:  "Bar",
+		Email:     "test@example.com",
+		DOB:       "1980-01-01",
+		Location: onfido.Location{
+			CountryOfResidence: "USA",
+		},
+		Address: &onfido.Address{
+			FlatNumber:     "Apt 4",
+			BuildingName:   "Example Building",
+			BuildingNumber: "123",
+			Street:         "Main Street",
+			SubStreet:      "Unit A",
+			Town:           "New York",
+			State:          "NY",
+			Postcode:       "10001",
+			Country:        "USA",
+		},
+		Consents: []onfido.Consent{
+			{
+				Name:      string(onfido.ConsentPrivacyNoticesRead),
+				Granted:   true,
+				GrantedAt: "2023-01-01T12:00:00Z",
+			},
+		},
 	}
 	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
@@ -170,6 +338,14 @@ func TestGetApplicant_ValidRequest(t *testing.T) {
 	assert.Equal(t, expected.Title, a.Title)
 	assert.Equal(t, expected.FirstName, a.FirstName)
 	assert.Equal(t, expected.LastName, a.LastName)
+	assert.Equal(t, expected.Email, a.Email)
+	assert.Equal(t, expected.DOB, a.DOB)
+	assert.Equal(t, expected.Location, a.Location)
+	assert.Equal(t, expected.Address.Street, a.Address.Street)
+	assert.Equal(t, expected.Address.Town, a.Address.Town)
+	assert.Equal(t, expected.Address.Country, a.Address.Country)
+	assert.Len(t, a.Consents, 1)
+	assert.Equal(t, expected.Consents[0].Name, a.Consents[0].Name)
 }
 
 func TestListApplicants_NonOKResponse(t *testing.T) {
@@ -271,6 +447,25 @@ func TestUpdateApplicant_ValidRequest(t *testing.T) {
 		Title:     "Mr",
 		FirstName: "Foo",
 		LastName:  "Bar",
+		Email:     "updated@example.com",
+		DOB:       "1985-06-15",
+		Location: onfido.Location{
+			CountryOfResidence: "GBR",
+		},
+		Address: &onfido.Address{
+			BuildingNumber: "456",
+			Street:         "Updated Street",
+			Town:           "London",
+			Postcode:       "SW1A 1AA",
+			Country:        "GBR",
+		},
+		Consents: []onfido.Consent{
+			{
+				Name:      string(onfido.ConsentPrivacyNoticesRead),
+				Granted:   true,
+				GrantedAt: "2023-06-15T14:30:00Z",
+			},
+		},
 	}
 	expectedJSON, err := json.Marshal(expected)
 	if err != nil {
@@ -303,4 +498,12 @@ func TestUpdateApplicant_ValidRequest(t *testing.T) {
 	assert.Equal(t, expected.Title, a.Title)
 	assert.Equal(t, expected.FirstName, a.FirstName)
 	assert.Equal(t, expected.LastName, a.LastName)
+	assert.Equal(t, expected.Email, a.Email)
+	assert.Equal(t, expected.DOB, a.DOB)
+	assert.Equal(t, expected.Location, a.Location)
+	assert.Equal(t, expected.Address.Street, a.Address.Street)
+	assert.Equal(t, expected.Address.Town, a.Address.Town)
+	assert.Equal(t, expected.Address.Country, a.Address.Country)
+	assert.Len(t, a.Consents, 1)
+	assert.Equal(t, expected.Consents[0].Name, a.Consents[0].Name)
 }

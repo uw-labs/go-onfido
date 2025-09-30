@@ -17,7 +17,7 @@ import (
 // Constants
 const (
 	ClientVersion   = "0.1.0"
-	DefaultEndpoint = "https://api.onfido.com/v2"
+	DefaultEndpoint = "https://api.eu.onfido.com/v3.6"
 	TokenEnv        = "ONFIDO_TOKEN"
 )
 

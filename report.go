@@ -6,13 +6,29 @@ import (
 	"time"
 )
 
-// Supported report names, results, subresults, and variants
+// Supported report names, results, subresults
 const (
-	ReportNameIdentity         ReportName = "identity"
-	ReportNameDocument         ReportName = "document"
-	ReportNameFacialSimilarity ReportName = "facial_similarity"
-	ReportNameStreetLevel      ReportName = "street_level"
-	ReportNameProofOfAddress   ReportName = "proof_of_address"
+	ReportNameDocument                              ReportName = "document"
+	ReportNameDocumentVideo                         ReportName = "document_video"
+	ReportNameDocumentWithAddressInformation        ReportName = "document_with_address_information"
+	ReportNameDocumentVideoWithAddressInformation   ReportName = "document_video_with_address_information"
+	ReportNameDocumentWithDrivingLicenceInformation ReportName = "document_with_driving_licence_information"
+	ReportNameDocumentWithDriverVerification        ReportName = "document_with_driver_verification"
+	ReportNameFacialSimilarityPhoto                 ReportName = "facial_similarity_photo"
+	ReportNameFacialSimilarityPhotoFullyAuto        ReportName = "facial_similarity_photo_fully_auto"
+	ReportNameFacialSimilarityVideo                 ReportName = "facial_similarity_video"
+	ReportNameFacialSimilarityMotion                ReportName = "facial_similarity_motion"
+	ReportNameKnownFaces                            ReportName = "known_faces"
+	ReportNameIdentityEnhanced                      ReportName = "identity_enhanced"
+	ReportNameWatchlistEnhanced                     ReportName = "watchlist_enhanced"
+	ReportNameWatchlistAML                          ReportName = "watchlist_aml"
+	ReportNameWatchlistStandard                     ReportName = "watchlist_standard"
+	ReportNameWatchlistPepsOnly                     ReportName = "watchlist_peps_only"
+	ReportNameWatchlistSanctionsOnly                ReportName = "watchlist_sanctions_only"
+	ReportNameProofOfAddress                        ReportName = "proof_of_address"
+	ReportNameUSDriversLicence                      ReportName = "us_driving_licence"
+	ReportNameDeviceIntelligence                    ReportName = "device_intelligence"
+	ReportNameIndiaPAN                              ReportName = "india_pan"
 
 	ReportResultClear        ReportResult = "clear"
 	ReportResultConsider     ReportResult = "consider"
@@ -22,10 +38,6 @@ const (
 	ReportSubResultRejected  ReportSubResult = "rejected"
 	ReportSubResultSuspected ReportSubResult = "suspected"
 	ReportSubResultCaution   ReportSubResult = "caution"
-
-	ReportVariantStandard ReportVariant = "standard"
-	ReportVariantKYC      ReportVariant = "kyc"
-	ReportVariantVideo    ReportVariant = "video"
 )
 
 // ReportName represents a report type name
@@ -37,9 +49,6 @@ type ReportResult string
 // ReportSubResult represents a report sub result
 type ReportSubResult string
 
-// ReportVariant represents a report variant
-type ReportVariant string
-
 // Report represents a report from the Onfido API
 type Report struct {
 	ID         string                 `json:"id,omitempty"`
@@ -48,7 +57,6 @@ type Report struct {
 	Status     string                 `json:"status,omitempty"`
 	Result     ReportResult           `json:"result,omitempty"`
 	SubResult  ReportSubResult        `json:"sub_result,omitempty"`
-	Variant    ReportVariant          `json:"variant,omitempty"`
 	Href       string                 `json:"href,omitempty"`
 	Options    map[string]interface{} `json:"options,omitempty"`
 	Breakdown  Breakdowns             `json:"breakdown,omitempty"`
@@ -60,10 +68,10 @@ type Reports struct {
 	Reports []*Report `json:"reports"`
 }
 
-// GetReport retrieves a report for the provided check by its ID.
+// GetReport retrieves a report by its ID.
 // see https://documentation.onfido.com/?shell#retrieve-report
-func (c *Client) GetReport(ctx context.Context, checkID, id string) (*Report, error) {
-	req, err := c.newRequest("GET", "/checks/"+checkID+"/reports/"+id, nil)
+func (c *Client) GetReport(ctx context.Context, id string) (*Report, error) {
+	req, err := c.newRequest("GET", "/reports/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -75,8 +83,8 @@ func (c *Client) GetReport(ctx context.Context, checkID, id string) (*Report, er
 
 // ResumeReport resumes a paused report by its ID.
 // see https://documentation.onfido.com/?shell#resume-report
-func (c *Client) ResumeReport(ctx context.Context, checkID, id string) error {
-	req, err := c.newRequest("POST", "/checks/"+checkID+"/reports/"+id+"/resume", nil)
+func (c *Client) ResumeReport(ctx context.Context, id string) error {
+	req, err := c.newRequest("POST", "/reports/"+id+"/resume", nil)
 	if err != nil {
 		return err
 	}
@@ -87,8 +95,8 @@ func (c *Client) ResumeReport(ctx context.Context, checkID, id string) error {
 
 // CancelReport cancels a report by its ID.
 // see https://documentation.onfido.com/?shell#cancel-report
-func (c *Client) CancelReport(ctx context.Context, checkID, id string) error {
-	req, err := c.newRequest("POST", "/checks/"+checkID+"/reports/"+id+"/cancel", nil)
+func (c *Client) CancelReport(ctx context.Context, id string) error {
+	req, err := c.newRequest("POST", "/reports/"+id+"/cancel", nil)
 	if err != nil {
 		return err
 	}
@@ -125,7 +133,7 @@ func (c *Client) ListReports(checkID string) *ReportIter {
 
 	return &ReportIter{&iter{
 		c:       c,
-		nextURL: "/checks/" + checkID + "/reports",
+		nextURL: "/reports?check_id=" + checkID,
 		handler: handler,
 	}}
 }

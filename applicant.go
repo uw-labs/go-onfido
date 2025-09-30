@@ -20,11 +20,33 @@ const (
 	IDNumberTypeDrivingLicense  IDNumberType = "driving_license"
 )
 
+// ConsentName represents the type of consent given by an applicant
+type ConsentName string
+
+// Supported consent types for US applicants
+const (
+	ConsentPrivacyNoticesRead ConsentName = "privacy_notices_read"
+	ConsentSSNVerification    ConsentName = "ssn_verification"
+)
+
 // IDNumber represents an ID number from the Onfido API
 type IDNumber struct {
 	Type      IDNumberType `json:"type,omitempty"`
 	Value     string       `json:"value,omitempty"`
 	StateCode string       `json:"state_code,omitempty"`
+}
+
+// Consent represents consent given by an applicant
+type Consent struct {
+	Name      string `json:"name"`
+	Granted   bool   `json:"granted"`
+	GrantedAt string `json:"granted_at,omitempty"`
+}
+
+// Location struct represents location information for an applicant
+type Location struct {
+	IPAddress          string `json:"ip_address,omitempty"`
+	CountryOfResidence string `json:"country_of_residence,omitempty"`
 }
 
 // Applicants represents a list of applicants from the Onfido API
@@ -34,26 +56,19 @@ type Applicants struct {
 
 // Applicant represents an applicant from the Onfido API
 type Applicant struct {
-	ID                string     `json:"id,omitempty"`
-	CreatedAt         *time.Time `json:"created_at,omitempty"`
-	Sandbox           bool       `json:"sandbox,omitempty"`
-	Title             string     `json:"title,omitempty"`
-	FirstName         string     `json:"first_name,omitempty"`
-	LastName          string     `json:"last_name,omitempty"`
-	MiddleName        string     `json:"middle_name,omitempty"`
-	Email             string     `json:"email,omitempty"`
-	Gender            string     `json:"gender,omitempty"`
-	DOB               string     `json:"dob,omitempty"`
-	Telephone         string     `json:"telephone,omitempty"`
-	Mobile            string     `json:"mobile,omitempty"`
-	Country           string     `json:"country,omitempty"`
-	MothersMaidenName string     `json:"mothers_maiden_name,omitempty"`
-	PreviousLastName  string     `json:"previous_last_name,omitempty"`
-	Nationality       string     `json:"nationality,omitempty"`
-	CountryOfBirth    string     `json:"country_of_birth,omitempty"`
-	TownOfBirth       string     `json:"town_of_birth,omitempty"`
-	IDNumbers         []IDNumber `json:"id_numbers,omitempty"`
-	Addresses         []Address  `json:"addresses,omitempty"`
+	ID         string     `json:"id,omitempty"`
+	CreatedAt  *time.Time `json:"created_at,omitempty"`
+	Sandbox    bool       `json:"sandbox,omitempty"`
+	Title      string     `json:"title,omitempty"`
+	FirstName  string     `json:"first_name,omitempty"`
+	LastName   string     `json:"last_name,omitempty"`
+	MiddleName string     `json:"middle_name,omitempty"`
+	Email      string     `json:"email,omitempty"`
+	DOB        string     `json:"dob,omitempty"`
+	IDNumbers  []IDNumber `json:"id_numbers,omitempty"`
+	Address    *Address   `json:"address,omitempty"`
+	Location   Location   `json:"location,omitempty"`
+	Consents   []Consent  `json:"consents,omitempty"`
 }
 
 // CreateApplicant creates a new applicant.
