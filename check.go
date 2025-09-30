@@ -65,7 +65,7 @@ type Check struct {
 
 // CheckExpanded represents a check with expanded report objects
 type CheckExpanded struct {
-	*Check
+	Check
 	Reports []*Report `json:"reports,omitempty"`
 }
 
@@ -118,7 +118,7 @@ func (c *Client) GetCheckExpanded(ctx context.Context, id string) (*CheckExpande
 
 	// Create the expanded check with the base check data
 	expanded := &CheckExpanded{
-		Check:   check,
+		Check:   *check,
 		Reports: make([]*Report, len(check.ReportIDs)),
 	}
 
