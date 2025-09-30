@@ -23,7 +23,9 @@ func main() {
 		FirstName: "Rob",
 		LastName:  "Crowe",
 		DOB:       "1990-01-31",
-		Location:  "GBR", // New mandatory field for v3.4+
+		Location: onfido.Location{ // New mandatory field for v3.4+
+			CountryOfResidence: "GBR",
+		},
 		Address: &onfido.Address{ // Now single address instead of array
 			BuildingNumber: "18",
 			Street:         "Wind Corner",
