@@ -44,14 +44,15 @@ func main() {
 		panic(err)
 	}
 
+	asynchronous := true
 	check, err := client.CreateCheck(ctx, onfido.CheckRequest{
 		ApplicantID: applicant.ID, // Required in request body for v3
 		ReportNames: []onfido.ReportName{ // New format instead of Reports array
 			onfido.ReportNameDocument,
 			onfido.ReportNameIdentityEnhanced, // New report name for identity_enhanced
 		},
-		ApplicantProvidesData: true, // Replaces standard checks
-		Asynchronous:          true, // Renamed from Async, defaults to true
+		ApplicantProvidesData: true,          // Replaces standard checks
+		Asynchronous:          &asynchronous, // Renamed from Async, defaults to true
 	})
 	if err != nil {
 		panic(err)

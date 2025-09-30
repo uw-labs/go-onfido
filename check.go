@@ -29,7 +29,7 @@ const (
 // CheckRequest represents a check request to Onfido API
 type CheckRequest struct {
 	ApplicantID           string                 `json:"applicant_id"`
-	ReportNames           []string               `json:"report_names"`
+	ReportNames           []ReportName           `json:"report_names"`
 	DocumentIDs           []string               `json:"document_ids,omitempty"`
 	ApplicantProvidesData bool                   `json:"applicant_provides_data,omitempty"`
 	Asynchronous          *bool                  `json:"asynchronous,omitempty"`

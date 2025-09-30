@@ -67,7 +67,7 @@ func TestCreateCheck_CheckCreated(t *testing.T) {
 	suppressFormEmails := true
 	c, err := client.CreateCheck(context.Background(), onfido.CheckRequest{
 		ApplicantID:           applicantID,
-		ReportNames:           []string{string(onfido.ReportNameDocument)},
+		ReportNames:           []onfido.ReportName{onfido.ReportNameDocument},
 		RedirectURI:           expected.RedirectURI,
 		Tags:                  expected.Tags,
 		SuppressFormEmails:    &suppressFormEmails,
