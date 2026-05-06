@@ -1,4 +1,4 @@
-# go-onfido [![Build](https://github.com/uw-labs/go-onfido/actions/workflows/test.yml/badge.svg)](https://github.com/uw-labs/go-onfido/actions/workflows/test.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/uw-labs/go-onfido)](https://goreportcard.com/report/github.com/uw-labs/go-onfido)
+# go-onfido [![Build](https://github.com/uw-labs/go-onfido/actions/workflows/ci.yml/badge.svg)](https://github.com/uw-labs/go-onfido/actions/workflows/ci.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/uw-labs/go-onfido)](https://goreportcard.com/report/github.com/uw-labs/go-onfido)
 
 Client for the [Onfido API](https://documentation.onfido.com/)
 
