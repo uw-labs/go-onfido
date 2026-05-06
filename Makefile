@@ -1,4 +1,4 @@
-GOLANGCI_LINT_VERSION ?= v1.16.0
+GOLANGCI_LINT_VERSION ?= v1.28.3
 
 .PHONY: deps deps-integration install-lint lint test test-integration ci
 
