@@ -18,9 +18,9 @@ jobs:
           go-version: "1.12"
       
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.28.3
+          version: v1.16.0
           args: --enable-all -D=lll,gochecknoglobals,gosec,goconst,gocritic
 
   test:

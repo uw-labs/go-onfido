@@ -1,4 +1,4 @@
-GOLANGCI_LINT_VERSION ?= v1.28.3
+GOLANGCI_LINT_VERSION ?= v1.16.0
 
 .PHONY: deps deps-integration install-lint lint test test-integration ci
 
@@ -12,7 +12,7 @@ install-lint:
 	curl -sSfL https://golangci-lint.run/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(GOLANGCI_LINT_VERSION)
 
 lint:
-	golangci-lint run -D=lll,gochecknoglobals,gosec,goconst,gocritic
+	golangci-lint run --enable-all -D=lll,gochecknoglobals,gosec,goconst,gocritic
 
 test:
 	go test -v -race ./...
