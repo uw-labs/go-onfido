@@ -35,7 +35,7 @@ type HTTPRequester interface {
 
 // Error represents an Onfido API error response
 type Error struct {
-	Resp *http.Response
+	Resp *http.Response `json:"-"`
 	// see https://documentation.onfido.com/#error-object
 	Err struct {
 		ID     string      `json:"id"`
@@ -126,7 +126,7 @@ func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) (*htt
 		}
 	}
 	if resp.Body != nil {
-		defer resp.Body.Close()
+		defer resp.Body.Close() //nolint:errcheck
 	}
 
 	if c := resp.StatusCode; c < 200 || c > 299 {
@@ -153,7 +153,7 @@ func isJSONResponse(resp *http.Response) bool {
 func handleResponseErr(resp *http.Response) error {
 	var onfidoErr Error
 	if resp.Body != nil && isJSONResponse(resp) {
-		defer resp.Body.Close()
+		defer resp.Body.Close() //nolint:errcheck
 		if err := json.NewDecoder(resp.Body).Decode(&onfidoErr); err != nil {
 			return err
 		}

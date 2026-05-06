@@ -18,17 +18,19 @@ func main() {
 		if err != nil {
 			if err == onfido.ErrInvalidWebhookSignature {
 				w.WriteHeader(http.StatusBadRequest)
-				w.Write([]byte("Invalid signature"))
+				w.Write([]byte("Invalid signature")) //nolint:errcheck
 				return
 			}
 
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Error occurred"))
+			w.Write([]byte("Error occurred")) //nolint:errcheck
 			return
 		}
 
-		fmt.Fprintf(w, "Webhook: %+v\n", whReq)
+		fmt.Fprintf(w, "Webhook: %+v\n", whReq) //nolint:errcheck
 	})
 
-	http.ListenAndServe(":8080", nil)
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		panic(err)
+	}
 }

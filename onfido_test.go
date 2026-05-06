@@ -62,16 +62,16 @@ func TestToken_IsProd(t *testing.T) {
 }
 
 func TestNewClientFromEnv_NoToken(t *testing.T) {
-	os.Setenv(TokenEnv, "")
+	os.Setenv(TokenEnv, "") //nolint:errcheck
 	if _, err := NewClientFromEnv(); err == nil {
-		t.Fatal()
+		t.Fatal(err)
 	}
 }
 
 func TestNewClientFromEnv_EnvSet(t *testing.T) {
 	expectedToken := "lk3j6323j442"
-	os.Setenv(TokenEnv, expectedToken)
-	defer os.Setenv(TokenEnv, "")
+	os.Setenv(TokenEnv, expectedToken) //nolint:errcheck
+	defer os.Setenv(TokenEnv, "")      //nolint:errcheck
 
 	client, err := NewClientFromEnv()
 	if err != nil {

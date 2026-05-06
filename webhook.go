@@ -84,7 +84,7 @@ func (wh *Webhook) ParseFromRequest(req *http.Request) (*WebhookRequest, error) 
 	if err != nil {
 		return nil, err
 	}
-	defer req.Body.Close()
+	defer req.Body.Close() //nolint:errcheck
 
 	if !wh.SkipSignatureValidation {
 		if err := wh.ValidateSignature(body, signature); err != nil {

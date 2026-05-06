@@ -22,8 +22,8 @@ func TestNewWebhookFromEnv_MissingToken(t *testing.T) {
 
 func TestNewWebhookFromEnv_TokenSet(t *testing.T) {
 	expected := "808yup"
-	os.Setenv(onfido.WebhookTokenEnv, expected)
-	defer os.Setenv(onfido.WebhookTokenEnv, "")
+	os.Setenv(onfido.WebhookTokenEnv, expected) //nolint:errcheck
+	defer os.Setenv(onfido.WebhookTokenEnv, "") //nolint:errcheck
 
 	wh, err := onfido.NewWebhookFromEnv()
 	if err != nil {
