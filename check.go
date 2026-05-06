@@ -50,7 +50,6 @@ type Check struct {
 	CreatedAt             *time.Time  `json:"created_at,omitempty"`
 	Href                  string      `json:"href,omitempty"`
 	ApplicantID           string      `json:"applicant_id,omitempty"`
-	ApplicantProvidesData bool        `json:"applicant_provides_data,omitempty"`
 	Status                CheckStatus `json:"status,omitempty"`
 	Result                CheckResult `json:"result,omitempty"`
 	FormURI               string      `json:"form_uri,omitempty"`
@@ -59,6 +58,7 @@ type Check struct {
 	ReportIDs             []string    `json:"report_ids,omitempty"`
 	Tags                  []string    `json:"tags,omitempty"`
 	WebhookIDs            []string    `json:"webhook_ids,omitempty"`
+	ApplicantProvidesData bool        `json:"applicant_provides_data,omitempty"`
 	Paused                bool        `json:"paused,omitempty"`
 	Sandbox               bool        `json:"sandbox,omitempty"`
 }

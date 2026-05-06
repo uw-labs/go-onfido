@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package onfido_test
@@ -35,7 +36,7 @@ func TestIntegrationCreateApplicant_ApplicantCreated(t *testing.T) {
 	assert.Equal(t, expected.Email, a.Email)
 	assert.Equal(t, expected.FirstName, a.FirstName)
 	assert.Equal(t, expected.LastName, a.LastName)
-	assert.Equal(t, expected.Addresses, a.Addresses)
+	assert.Equal(t, expected.Address, a.Address)
 	assert.Equal(t, expected.IDNumbers, a.IDNumbers)
 
 	applicantID = a.ID
@@ -58,7 +59,7 @@ func TestIntegrationGetApplicant_ApplicantRetrieved(t *testing.T) {
 	assert.Equal(t, expected.Email, a.Email)
 	assert.Equal(t, expected.FirstName, a.FirstName)
 	assert.Equal(t, expected.LastName, a.LastName)
-	assert.Equal(t, expected.Addresses, a.Addresses)
+	assert.Equal(t, expected.Address, a.Address)
 	assert.Equal(t, expected.IDNumbers, a.IDNumbers)
 }
 
@@ -115,7 +116,7 @@ func TestIntegrationUploadDocument_DocumentUploaded(t *testing.T) {
 	}
 
 	expected := getDefaultDocument()
-	d, err := getOnfidoClient().UploadDocument(context.Background(), applicantID, *expected)
+	d, err := getOnfidoClient().UploadDocument(context.Background(), *expected)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -136,13 +137,9 @@ func TestIntegrationUploadDocument_DocumentUploaded(t *testing.T) {
 }
 
 func TestIntegrationGetDocument_DocumentRetrieved(t *testing.T) {
-	if documentID == "" {
-		t.Skip("no document ID set, check document upload test. skipping")
-	}
-
 	expected := getDefaultDocument()
 	file := expected.File.(*os.File)
-	d, err := getOnfidoClient().GetDocument(context.Background(), applicantID, documentID)
+	d, err := getOnfidoClient().GetDocument(context.Background(), applicantID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -191,15 +188,13 @@ func getDefaultApplicant() *onfido.Applicant {
 				Value: "1234567",
 			},
 		},
-		Addresses: []onfido.Address{
-			{
-				FlatNumber: "10",
-				Street:     "Baker Street",
-				Town:       "London",
-				Postcode:   "W1U 8ED",
-				Country:    "GBR",
-				StartDate:  "2017-12-05",
-			},
+		Address: &onfido.Address{
+			FlatNumber: "10",
+			Street:     "Baker Street",
+			Town:       "London",
+			Postcode:   "W1U 8ED",
+			Country:    "GBR",
+			StartDate:  "2017-12-05",
 		},
 	}
 }
