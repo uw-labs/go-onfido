@@ -17,11 +17,11 @@ jobs:
         with:
           go-version: "1.12"
       
+      - name: Install golangci-lint
+        run: make install-lint
+
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: v1.16.0
-          args: --enable-all -D=lll,gochecknoglobals,gosec,goconst,gocritic
+        run: make lint
 
   test:
     runs-on: ubuntu-latest
