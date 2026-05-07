@@ -26,7 +26,7 @@ func (i *LivePhotoIter) LivePhoto() *LivePhoto {
 	return i.Current().(*LivePhoto)
 }
 
-// ListPhotos retrieves the list of photos for the provided applicant.
+// ListLivePhotos retrieves the list of photos for the provided applicant.
 // see https://documentation.onfido.com/?shell#live-photos
 func (c *Client) ListLivePhotos(applicantID string) *LivePhotoIter {
 	return &LivePhotoIter{&iter{
