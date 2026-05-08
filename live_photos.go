@@ -23,10 +23,11 @@ type LivePhotoIter struct {
 
 // LivePhoto returns the current item in the iterator as a LivePhoto.
 func (i *LivePhotoIter) LivePhoto() *LivePhoto {
-	return i.Current().(*LivePhoto)
+	v, _ := i.Current().(*LivePhoto)
+	return v
 }
 
-// ListPhotos retrieves the list of photos for the provided applicant.
+// ListLivePhotos retrieves the list of photos for the provided applicant.
 // see https://documentation.onfido.com/?shell#live-photos
 func (c *Client) ListLivePhotos(applicantID string) *LivePhotoIter {
 	return &LivePhotoIter{&iter{

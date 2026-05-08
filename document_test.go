@@ -14,6 +14,7 @@ import (
 )
 
 func TestUploadDocument_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -38,6 +39,7 @@ func TestUploadDocument_NonOKResponse(t *testing.T) {
 }
 
 func TestUploadDocument_DocumentUploaded(t *testing.T) {
+	t.Parallel()
 	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
 	expected := onfido.Document{
 		ID:           "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
@@ -56,7 +58,6 @@ func TestUploadDocument_DocumentUploaded(t *testing.T) {
 
 	m := mux.NewRouter()
 	m.HandleFunc("/documents", func(w http.ResponseWriter, r *http.Request) {
-
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, wErr := w.Write(expectedJSON)
@@ -89,6 +90,7 @@ func TestUploadDocument_DocumentUploaded(t *testing.T) {
 }
 
 func TestGetDocument_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -106,6 +108,7 @@ func TestGetDocument_NonOKResponse(t *testing.T) {
 }
 
 func TestGetDocument_DocumentRetrieved(t *testing.T) {
+	t.Parallel()
 	expected := onfido.Document{
 		ID:           "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Href:         "/v2/live_photos/7410A943-8F00-43D8-98DE-36A774196D86",
@@ -153,6 +156,7 @@ func TestGetDocument_DocumentRetrieved(t *testing.T) {
 }
 
 func TestListDocuments_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -173,6 +177,7 @@ func TestListDocuments_NonOKResponse(t *testing.T) {
 }
 
 func TestListDocuments_DocumentsRetrieved(t *testing.T) {
+	t.Parallel()
 	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
 	expected := onfido.Document{
 		ID:           "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
@@ -193,7 +198,6 @@ func TestListDocuments_DocumentsRetrieved(t *testing.T) {
 
 	m := mux.NewRouter()
 	m.HandleFunc("/documents", func(w http.ResponseWriter, r *http.Request) {
-
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, wErr := w.Write(expectedJSON)

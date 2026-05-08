@@ -71,7 +71,7 @@ type Reports struct {
 // GetReport retrieves a report by its ID.
 // see https://documentation.onfido.com/?shell#retrieve-report
 func (c *Client) GetReport(ctx context.Context, id string) (*Report, error) {
-	req, err := c.newRequest("GET", "/reports/"+id, nil)
+	req, err := c.newRequest(ctx, "GET", "/reports/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (c *Client) GetReport(ctx context.Context, id string) (*Report, error) {
 // ResumeReport resumes a paused report by its ID.
 // see https://documentation.onfido.com/?shell#resume-report
 func (c *Client) ResumeReport(ctx context.Context, id string) error {
-	req, err := c.newRequest("POST", "/reports/"+id+"/resume", nil)
+	req, err := c.newRequest(ctx, "POST", "/reports/"+id+"/resume", nil)
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func (c *Client) ResumeReport(ctx context.Context, id string) error {
 // CancelReport cancels a report by its ID.
 // see https://documentation.onfido.com/?shell#cancel-report
 func (c *Client) CancelReport(ctx context.Context, id string) error {
-	req, err := c.newRequest("POST", "/reports/"+id+"/cancel", nil)
+	req, err := c.newRequest(ctx, "POST", "/reports/"+id+"/cancel", nil)
 	if err != nil {
 		return err
 	}
@@ -112,7 +112,8 @@ type ReportIter struct {
 
 // Report returns the current item in the iterator as a Report.
 func (i *ReportIter) Report() *Report {
-	return i.Current().(*Report)
+	v, _ := i.Current().(*Report)
+	return v
 }
 
 // ListReports retrieves the list of reports for the provided check.

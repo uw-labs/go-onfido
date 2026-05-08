@@ -63,7 +63,7 @@ func (c *Client) CreateWebhook(ctx context.Context, wr WebhookRefRequest) (*Webh
 		return nil, err
 	}
 
-	req, err := c.newRequest("POST", "/webhooks", bytes.NewBuffer(jsonStr))
+	req, err := c.newRequest(ctx, "POST", "/webhooks", bytes.NewBuffer(jsonStr))
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,8 @@ type WebhookRefIter struct {
 
 // WebhookRef returns the current item in the iterator as a WebhookRef.
 func (i *WebhookRefIter) WebhookRef() *WebhookRef {
-	return i.Current().(*WebhookRef)
+	v, _ := i.Current().(*WebhookRef)
+	return v
 }
 
 // ListWebhooks retrieves the list of webhooks.

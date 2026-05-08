@@ -24,7 +24,7 @@ func (c *Client) NewSdkToken(ctx context.Context, id, referrer string) (*SdkToke
 		return nil, err
 	}
 
-	req, err := c.newRequest("POST", "/sdk_token", bytes.NewBuffer(jsonStr))
+	req, err := c.newRequest(ctx, "POST", "/sdk_token", bytes.NewBuffer(jsonStr))
 	if err != nil {
 		return nil, err
 	}

@@ -6,9 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
-	"os"
 	"strings"
 	"testing"
 
@@ -16,6 +15,7 @@ import (
 )
 
 func TestError_MsgSet(t *testing.T) {
+	t.Parallel()
 	err := Error{}
 	err.Err.Msg = "some error message"
 	if err.Error() != err.Err.Msg {
@@ -24,6 +24,7 @@ func TestError_MsgSet(t *testing.T) {
 }
 
 func TestError_UseHttpResp(t *testing.T) {
+	t.Parallel()
 	err := Error{
 		Resp: &http.Response{
 			StatusCode: http.StatusTeapot,
@@ -35,6 +36,7 @@ func TestError_UseHttpResp(t *testing.T) {
 }
 
 func TestError_FallbackMsg(t *testing.T) {
+	t.Parallel()
 	err := Error{}
 	if err.Error() != "an unknown error occurred" {
 		t.Fatal()
@@ -42,6 +44,7 @@ func TestError_FallbackMsg(t *testing.T) {
 }
 
 func TestToken_IsProd(t *testing.T) {
+	t.Parallel()
 	tokens := []struct {
 		token  string
 		isProd bool
@@ -62,7 +65,7 @@ func TestToken_IsProd(t *testing.T) {
 }
 
 func TestNewClientFromEnv_NoToken(t *testing.T) {
-	os.Setenv(TokenEnv, "")
+	t.Setenv(TokenEnv, "")
 	if _, err := NewClientFromEnv(); err == nil {
 		t.Fatal()
 	}
@@ -70,8 +73,7 @@ func TestNewClientFromEnv_NoToken(t *testing.T) {
 
 func TestNewClientFromEnv_EnvSet(t *testing.T) {
 	expectedToken := "lk3j6323j442"
-	os.Setenv(TokenEnv, expectedToken)
-	defer os.Setenv(TokenEnv, "")
+	t.Setenv(TokenEnv, expectedToken)
 
 	client, err := NewClientFromEnv()
 	if err != nil {
@@ -83,12 +85,13 @@ func TestNewClientFromEnv_EnvSet(t *testing.T) {
 }
 
 func TestNewRequest_WithFullURL(t *testing.T) {
+	t.Parallel()
 	client := NewClient("123")
-	req, err := client.newRequest("GET", "https://example.com", nil)
+	req, err := client.newRequest(context.Background(), "GET", "https://example.com", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if req.Method != "GET" {
+	if req.Method != http.MethodGet {
 		t.Fatalf("expected method of `GET` but got `%s`", req.Method)
 	}
 	if req.URL.String() != "https://example.com" {
@@ -97,16 +100,17 @@ func TestNewRequest_WithFullURL(t *testing.T) {
 }
 
 func TestNewRequest_WithPathUri(t *testing.T) {
+	t.Parallel()
 	expectedURL := "https://api.eu.onfido.com/v3.6/applicants"
 	client := NewClient("123")
 	uris := []string{"/applicants", "applicants"}
 
 	for _, uri := range uris {
-		req, err := client.newRequest("GET", uri, nil)
+		req, err := client.newRequest(context.Background(), "GET", uri, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if req.Method != "GET" {
+		if req.Method != http.MethodGet {
 			t.Fatalf("expected method of `GET` but got `%s`", req.Method)
 		}
 		if req.URL.String() != expectedURL {
@@ -116,9 +120,10 @@ func TestNewRequest_WithPathUri(t *testing.T) {
 }
 
 func TestNewRequest_TokenSet(t *testing.T) {
+	t.Parallel()
 	expectedToken := "io2h54k2j3h52jk"
 	client := NewClient(expectedToken)
-	req, err := client.newRequest("get", "/foo", nil)
+	req, err := client.newRequest(context.Background(), "get", "/foo", nil)
 	if err != nil {
 		t.Fatal()
 	}
@@ -130,6 +135,7 @@ func TestNewRequest_TokenSet(t *testing.T) {
 }
 
 func TestDo_RequestErrors(t *testing.T) {
+	t.Parallel()
 	expected := errors.New("TestJson_RequestErrors")
 
 	client := NewClient("123")
@@ -139,12 +145,13 @@ func TestDo_RequestErrors(t *testing.T) {
 	if err == nil {
 		t.Fatal()
 	}
-	if err != expected {
+	if !errors.Is(err, expected) {
 		t.Fatalf("expected to see error `%s` but got `%s`", expected, err)
 	}
 }
 
 func TestDo_InvalidStatusCode(t *testing.T) {
+	t.Parallel()
 	client := NewClient("123")
 	client.HTTPClient = &stubbedHTTPClient{resp: &http.Response{StatusCode: http.StatusForbidden}}
 
@@ -152,8 +159,8 @@ func TestDo_InvalidStatusCode(t *testing.T) {
 	if err == nil {
 		t.Fatal()
 	}
-	onfidoErr, ok := err.(*Error)
-	if !ok {
+	var onfidoErr *Error
+	if !errors.As(err, &onfidoErr) {
 		t.Fatalf("expected to see `onfido.OnfidoError` but got %T", err)
 	}
 	if onfidoErr.Resp.StatusCode != http.StatusForbidden {
@@ -162,12 +169,13 @@ func TestDo_InvalidStatusCode(t *testing.T) {
 }
 
 func TestDo_InvalidStatusCode_InvalidJsonParsed(t *testing.T) {
+	t.Parallel()
 	resp := &http.Response{
 		Header:     make(map[string][]string),
 		StatusCode: http.StatusBadGateway,
 	}
 	resp.Header.Add("Content-Type", "application/json")
-	resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte("hello")))
+	resp.Body = io.NopCloser(bytes.NewBufferString("hello"))
 
 	client := NewClient("123")
 	client.HTTPClient = &stubbedHTTPClient{resp: resp}
@@ -176,12 +184,14 @@ func TestDo_InvalidStatusCode_InvalidJsonParsed(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected to see an error after the body was unable to be parsed as JSON")
 	}
-	if _, ok := err.(*Error); ok {
+	var onfidoE *Error
+	if errors.As(err, &onfidoE) {
 		t.Fatal("json should not have been parsed")
 	}
 }
 
 func TestDo_InvalidStatusCode_JsonParsed(t *testing.T) {
+	t.Parallel()
 	expected := Error{
 		Err: struct {
 			ID     string      `json:"id"`
@@ -208,7 +218,7 @@ func TestDo_InvalidStatusCode_JsonParsed(t *testing.T) {
 		StatusCode: http.StatusBadGateway,
 	}
 	resp.Header.Add("Content-Type", "application/json")
-	resp.Body = ioutil.NopCloser(bytes.NewBuffer(encodedErr))
+	resp.Body = io.NopCloser(bytes.NewBuffer(encodedErr))
 
 	client := NewClient("123")
 	client.HTTPClient = &stubbedHTTPClient{resp: resp}
@@ -217,13 +227,14 @@ func TestDo_InvalidStatusCode_JsonParsed(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected to see an error after the body was unable to be parsed as JSON")
 	}
-	onfidoErr, ok := err.(*Error)
-	if !ok {
+	var onfidoErr *Error
+	if !errors.As(err, &onfidoErr) {
 		t.Fatal("failed to parse error json")
 	}
 	assert.Equal(t, expected.Err.ID, onfidoErr.Err.ID)
 	assert.Equal(t, expected.Err.Type, onfidoErr.Err.Type)
 	assert.Equal(t, expected.Err.Msg, onfidoErr.Err.Msg)
+
 	for name, value := range expected.Err.Fields {
 		assert.Contains(t, onfidoErr.Err.Fields, name)
 		assert.ElementsMatch(t, onfidoErr.Err.Fields[name], value)
@@ -231,8 +242,9 @@ func TestDo_InvalidStatusCode_JsonParsed(t *testing.T) {
 }
 
 func TestDo_InvalidJsonResponse(t *testing.T) {
+	t.Parallel()
 	resp := &http.Response{StatusCode: http.StatusOK}
-	resp.Body = ioutil.NopCloser(bytes.NewBuffer([]byte("hello")))
+	resp.Body = io.NopCloser(bytes.NewBufferString("hello"))
 
 	client := NewClient("123")
 	client.HTTPClient = &stubbedHTTPClient{resp: resp}
@@ -244,9 +256,10 @@ func TestDo_InvalidJsonResponse(t *testing.T) {
 }
 
 func Test_handleResponseErr(t *testing.T) {
+	t.Parallel()
 	response := http.Response{
 		Header: map[string][]string{"Content-Type": {"application/json"}},
-		Body: ioutil.NopCloser(bytes.NewReader([]byte(
+		Body: io.NopCloser(bytes.NewReader([]byte(
 			`{
 				"error":{
 					"type":"validation_error",
@@ -258,7 +271,8 @@ func Test_handleResponseErr(t *testing.T) {
 	err := handleResponseErr(&response)
 	assert.Error(t, err)
 	assert.IsType(t, err, &Error{})
-	errT := err.(*Error)
+	var errT *Error
+	errors.As(err, &errT)
 	assert.Len(t, errT.Err.Fields, 1)
 	assert.Contains(t, errT.Err.Fields, "addresses")
 	assert.IsType(t, errT.Err.Fields["addresses"], []interface{}{})
@@ -269,7 +283,7 @@ type stubbedHTTPClient struct {
 	err  error
 }
 
-func (c *stubbedHTTPClient) Do(req *http.Request) (*http.Response, error) {
+func (c *stubbedHTTPClient) Do(_ *http.Request) (*http.Response, error) {
 	if c.err != nil {
 		return nil, c.err
 	}

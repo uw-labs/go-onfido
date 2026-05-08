@@ -14,6 +14,7 @@ import (
 )
 
 func TestNewSdkToken_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -34,6 +35,7 @@ func TestNewSdkToken_NonOKResponse(t *testing.T) {
 }
 
 func TestNewSdkToken_ApplicantsRetrieved(t *testing.T) {
+	t.Parallel()
 	expected := onfido.SdkToken{
 		ApplicantID: "klj25h2jk5j4k5jk35",
 		Referrer:    "https://*.uw-labs.co.uk/documentation/*",

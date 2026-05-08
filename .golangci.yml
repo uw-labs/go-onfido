@@ -1,0 +1,33 @@
+version: "2"
+
+linters:
+  default: all
+  disable:
+    - bodyclose
+    - depguard
+    - err113
+    - exhaustruct
+    - forbidigo
+    - funlen
+    - gochecknoglobals
+    - goconst
+    - gocritic
+    - godot
+    - gosec
+    - inamedparam
+    - lll
+    - mnd
+    - modernize
+    - musttag
+    - nestif
+    - nlreturn
+    - noinlineerr
+    - perfsprint
+    - revive
+    - tagliatelle
+    - testifylint
+    - testpackage
+    - varnamelen
+    - wrapcheck
+    - wsl
+    - wsl_v5

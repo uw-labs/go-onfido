@@ -21,7 +21,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer doc.Close()
+
+	defer func() {
+		if err := doc.Close(); err != nil {
+			fmt.Printf("Error closing document: %v\n", err)
+		}
+	}()
 
 	document, err := client.UploadDocument(ctx, onfido.DocumentRequest{
 		File:        doc,

@@ -13,6 +13,7 @@ import (
 )
 
 func TestCreateCheck_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -30,6 +31,7 @@ func TestCreateCheck_NonOKResponse(t *testing.T) {
 }
 
 func TestCreateCheck_CheckCreated(t *testing.T) {
+	t.Parallel()
 	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
 	expected := onfido.Check{
 		ID:          "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
@@ -89,6 +91,7 @@ func TestCreateCheck_CheckCreated(t *testing.T) {
 }
 
 func TestGetCheck_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -106,6 +109,7 @@ func TestGetCheck_NonOKResponse(t *testing.T) {
 }
 
 func TestGetCheck_CheckRetrieved(t *testing.T) {
+	t.Parallel()
 	expected := onfido.Check{
 		ID:                    "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Href:                  "/v3.6/checks/ce62d838-56f8-4ea5-98be-e7166d1dc33d",
@@ -160,6 +164,7 @@ func TestGetCheck_CheckRetrieved(t *testing.T) {
 }
 
 func TestGetCheckExpanded_NoReports(t *testing.T) {
+	t.Parallel()
 	expected := onfido.Check{
 		ID:                    "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Href:                  "/v3.6/checks/ce62d838-56f8-4ea5-98be-e7166d1dc33d",
@@ -214,6 +219,7 @@ func TestGetCheckExpanded_NoReports(t *testing.T) {
 }
 
 func TestGetCheckExpanded_NonOkResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -231,6 +237,7 @@ func TestGetCheckExpanded_NonOkResponse(t *testing.T) {
 }
 
 func TestGetCheckExpanded_HasReports(t *testing.T) {
+	t.Parallel()
 	checkID := "ce62d838-56f8-4ea5-98be-e7166d1dc33d"
 	report1ID := "1fd6fec0-456f-443a-b75d-b048f47c34f7"
 	report2ID := "6ec6c029-469e-4c9e-91f3-beeb3fbc175e"
@@ -337,6 +344,7 @@ func TestGetCheckExpanded_HasReports(t *testing.T) {
 }
 
 func TestGetCheckExpanded_HasReports_NonOkResponse(t *testing.T) {
+	t.Parallel()
 	checkID := "ce62d838-56f8-4ea5-98be-e7166d1dc33d"
 	report1ID := "1fd6fec0-456f-443a-b75d-b048f47c34f7"
 	report2ID := "returns-error-status"
@@ -417,6 +425,7 @@ func TestGetCheckExpanded_HasReports_NonOkResponse(t *testing.T) {
 }
 
 func TestResumeCheck_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -434,6 +443,7 @@ func TestResumeCheck_NonOKResponse(t *testing.T) {
 }
 
 func TestResumeCheck_CheckCreated(t *testing.T) {
+	t.Parallel()
 	expected := onfido.Check{
 		ID:     "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Status: "in_progress",
@@ -470,6 +480,7 @@ func TestResumeCheck_CheckCreated(t *testing.T) {
 }
 
 func TestListChecks_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -490,6 +501,8 @@ func TestListChecks_NonOKResponse(t *testing.T) {
 }
 
 func TestListChecks_ChecksRetrieved(t *testing.T) {
+	t.Parallel()
+
 	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
 	expected := onfido.Check{
 		ID:          "ce62d838-56f8-4ea5-98be-e7166d1dc33d",

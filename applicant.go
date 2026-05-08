@@ -67,7 +67,7 @@ type Applicant struct {
 	DOB        string     `json:"dob,omitempty"`
 	IDNumbers  []IDNumber `json:"id_numbers,omitempty"`
 	Address    *Address   `json:"address,omitempty"`
-	Location   Location   `json:"location,omitempty"`
+	Location   Location   `json:"location"`
 	Consents   []Consent  `json:"consents,omitempty"`
 }
 
@@ -79,7 +79,7 @@ func (c *Client) CreateApplicant(ctx context.Context, a Applicant) (*Applicant, 
 		return nil, err
 	}
 
-	req, err := c.newRequest("POST", "/applicants", bytes.NewBuffer(jsonStr))
+	req, err := c.newRequest(ctx, "POST", "/applicants", bytes.NewBuffer(jsonStr))
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func (c *Client) CreateApplicant(ctx context.Context, a Applicant) (*Applicant, 
 // DeleteApplicant deletes an applicant by its id.
 // see https://documentation.onfido.com/?shell#delete-applicant
 func (c *Client) DeleteApplicant(ctx context.Context, id string) error {
-	req, err := c.newRequest("DELETE", "/applicants/"+id, nil)
+	req, err := c.newRequest(ctx, "DELETE", "/applicants/"+id, nil)
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func (c *Client) DeleteApplicant(ctx context.Context, id string) error {
 // GetApplicant retrieves an applicant by its id.
 // see https://documentation.onfido.com/?shell#retrieve-applicant
 func (c *Client) GetApplicant(ctx context.Context, id string) (*Applicant, error) {
-	req, err := c.newRequest("GET", "/applicants/"+id, nil)
+	req, err := c.newRequest(ctx, "GET", "/applicants/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +120,8 @@ type ApplicantIter struct {
 
 // Applicant returns the current applicant on the iterator.
 func (i *ApplicantIter) Applicant() *Applicant {
-	return i.Current().(*Applicant)
+	v, _ := i.Current().(*Applicant)
+	return v
 }
 
 // ListApplicants retrieves the list of applicants.
@@ -157,7 +158,7 @@ func (c *Client) UpdateApplicant(ctx context.Context, a Applicant) (*Applicant, 
 		return nil, err
 	}
 
-	req, err := c.newRequest("PUT", "/applicants/"+a.ID, bytes.NewBuffer(jsonStr))
+	req, err := c.newRequest(ctx, "PUT", "/applicants/"+a.ID, bytes.NewBuffer(jsonStr))
 	if err != nil {
 		return nil, err
 	}

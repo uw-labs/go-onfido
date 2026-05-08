@@ -13,6 +13,7 @@ import (
 )
 
 func TestGetReport_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -30,6 +31,7 @@ func TestGetReport_NonOKResponse(t *testing.T) {
 }
 
 func TestGetReport_ReportRetrieved_Clear(t *testing.T) {
+	t.Parallel()
 	expected := onfido.Report{
 		ID:        "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Name:      onfido.ReportNameDocument,
@@ -83,6 +85,7 @@ func TestGetReport_ReportRetrieved_Clear(t *testing.T) {
 }
 
 func TestGetReport_ReportRetrieved_Consider(t *testing.T) {
+	t.Parallel()
 	breakdownResultConsider := onfido.BreakdownResult(onfido.ReportResultConsider)
 	breakdownSubResultConsider := onfido.BreakdownSubResult(onfido.ReportResultConsider)
 	breakdownSubResultClear := onfido.BreakdownSubResult(onfido.ReportResultClear)
@@ -158,6 +161,7 @@ func TestGetReport_ReportRetrieved_Consider(t *testing.T) {
 }
 
 func TestResumeReport_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -175,6 +179,7 @@ func TestResumeReport_NonOKResponse(t *testing.T) {
 }
 
 func TestResumeReport_ReportResumed(t *testing.T) {
+	t.Parallel()
 	reportID := "ce62d838-56f8-4ea5-98be-e7166d1dc33d"
 
 	m := mux.NewRouter()
@@ -198,6 +203,7 @@ func TestResumeReport_ReportResumed(t *testing.T) {
 }
 
 func TestCancelReport_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -215,6 +221,7 @@ func TestCancelReport_NonOKResponse(t *testing.T) {
 }
 
 func TestCancelReport_ReportResumed(t *testing.T) {
+	t.Parallel()
 	reportID := "ce62d838-56f8-4ea5-98be-e7166d1dc33d"
 
 	m := mux.NewRouter()
@@ -238,6 +245,7 @@ func TestCancelReport_ReportResumed(t *testing.T) {
 }
 
 func TestListReports_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -258,6 +266,7 @@ func TestListReports_NonOKResponse(t *testing.T) {
 }
 
 func TestListReports_ReportsRetrieved(t *testing.T) {
+	t.Parallel()
 	checkID := "541d040b-89f8-444b-8921-16b1333bf1c6"
 	expected := onfido.Report{
 		ID:        "ce62d838-56f8-4ea5-98be-e7166d1dc33d",

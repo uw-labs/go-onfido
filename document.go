@@ -117,8 +117,7 @@ func (c *Client) UploadDocument(ctx context.Context, dr DocumentRequest) (*Docum
 	if err := writer.Close(); err != nil {
 		return nil, err
 	}
-
-	req, err := c.newRequest("POST", "/documents", body)
+	req, err := c.newRequest(ctx, "POST", "/documents", body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	if err != nil {
 		return nil, err
@@ -132,7 +131,7 @@ func (c *Client) UploadDocument(ctx context.Context, dr DocumentRequest) (*Docum
 // GetDocument retrieves a single document by its ID.
 // see https://documentation.onfido.com/?shell#retrieve-document
 func (c *Client) GetDocument(ctx context.Context, id string) (*Document, error) {
-	req, err := c.newRequest("GET", "/documents/"+id, nil)
+	req, err := c.newRequest(ctx, "GET", "/documents/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +144,7 @@ func (c *Client) GetDocument(ctx context.Context, id string) (*Document, error) 
 // DownloadDocument downloads the file data for a document by its ID.
 // see https://documentation.onfido.com/?shell#download-document
 func (c *Client) DownloadDocument(ctx context.Context, id string) ([]byte, error) {
-	req, err := c.newRequest("GET", "/documents/"+id+"/download", nil)
+	req, err := c.newRequest(ctx, "GET", "/documents/"+id+"/download", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +161,8 @@ type DocumentIter struct {
 
 // Document returns the current item in the iterator as a Document.
 func (i *DocumentIter) Document() *Document {
-	return i.Current().(*Document)
+	v, _ := i.Current().(*Document)
+	return v
 }
 
 // ListDocuments retrieves the list of documents for the provided applicant.
