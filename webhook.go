@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 )
@@ -57,7 +57,8 @@ func NewWebhookFromEnv() (*Webhook, error) {
 // NewWebhook creates a new webhook handler
 func NewWebhook(token string) *Webhook {
 	return &Webhook{
-		Token: token,
+		Token:                   token,
+		SkipSignatureValidation: false,
 	}
 }
 
@@ -80,11 +81,11 @@ func (wh *Webhook) ValidateSignature(body []byte, signature string) error {
 // it as WebhookRequest if the request signature is valid.
 func (wh *Webhook) ParseFromRequest(req *http.Request) (*WebhookRequest, error) {
 	signature := req.Header.Get(WebhookSignatureHeader)
-	body, err := ioutil.ReadAll(req.Body)
+	body, err := io.ReadAll(req.Body)
+	defer req.Body.Close() //nolint:errcheck
 	if err != nil {
 		return nil, err
 	}
-	defer req.Body.Close()
 
 	if !wh.SkipSignatureValidation {
 		if err := wh.ValidateSignature(body, signature); err != nil {

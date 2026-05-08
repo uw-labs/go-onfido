@@ -3,6 +3,7 @@ package onfido_test
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,6 +14,7 @@ import (
 )
 
 func TestPickAddresses_EmptyPostcode(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -27,12 +29,14 @@ func TestPickAddresses_EmptyPostcode(t *testing.T) {
 	if it.Next(context.Background()) == true {
 		t.Fatal("expected iterator not to return next item, got next item")
 	}
-	if it.Err() != onfido.ErrEmptyPostcode {
+
+	if !errors.Is(it.Err(), onfido.ErrEmptyPostcode) {
 		t.Fatal("expected iterator to error with empty postcode")
 	}
 }
 
 func TestPickAddresses_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -53,6 +57,7 @@ func TestPickAddresses_NonOKResponse(t *testing.T) {
 }
 
 func TestPickAddresses_ApplicantsRetrieved(t *testing.T) {
+	t.Parallel()
 	expected := onfido.Address{
 		BuildingNumber: "20",
 		Street:         "Sandbanks Way",

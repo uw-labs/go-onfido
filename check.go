@@ -66,6 +66,7 @@ type Check struct {
 // CheckExpanded represents a check with expanded report objects
 type CheckExpanded struct {
 	Check
+
 	Reports []*Report `json:"reports,omitempty"`
 }
 
@@ -82,7 +83,7 @@ func (c *Client) CreateCheck(ctx context.Context, cr CheckRequest) (*Check, erro
 		return nil, err
 	}
 
-	req, err := c.newRequest("POST", "/checks", bytes.NewBuffer(jsonStr))
+	req, err := c.newRequest(ctx, "POST", "/checks", bytes.NewBuffer(jsonStr))
 	if err != nil {
 		return nil, err
 	}
@@ -95,7 +96,7 @@ func (c *Client) CreateCheck(ctx context.Context, cr CheckRequest) (*Check, erro
 // GetCheck retrieves a check by its ID.
 // see https://documentation.onfido.com/?shell#retrieve-check
 func (c *Client) GetCheck(ctx context.Context, id string) (*Check, error) {
-	req, err := c.newRequest("GET", "/checks/"+id, nil)
+	req, err := c.newRequest(ctx, "GET", "/checks/"+id, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +138,7 @@ func (c *Client) GetCheckExpanded(ctx context.Context, id string) (*CheckExpande
 // ResumeCheck resumes a paused check by its ID.
 // see https://documentation.onfido.com/?shell#resume-check
 func (c *Client) ResumeCheck(ctx context.Context, id string) (*Check, error) {
-	req, err := c.newRequest("POST", "/checks/"+id+"/resume", nil)
+	req, err := c.newRequest(ctx, "POST", "/checks/"+id+"/resume", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +151,7 @@ func (c *Client) ResumeCheck(ctx context.Context, id string) (*Check, error) {
 // DownloadCheck downloads a PDF summary of a check by its ID.
 // see https://documentation.onfido.com/api/latest/#download-check
 func (c *Client) DownloadCheck(ctx context.Context, id string) ([]byte, error) {
-	req, err := c.newRequest("GET", "/checks/"+id+"/download", nil)
+	req, err := c.newRequest(ctx, "GET", "/checks/"+id+"/download", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +168,8 @@ type CheckIter struct {
 
 // Check returns the current item in the iterator as a Check.
 func (i *CheckIter) Check() *Check {
-	return i.Current().(*Check)
+	v, _ := i.Current().(*Check)
+	return v
 }
 
 // ListChecks retrieves the list of checks for the provided applicant.

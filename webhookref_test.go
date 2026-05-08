@@ -13,6 +13,7 @@ import (
 )
 
 func TestCreateWebhook_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -30,6 +31,7 @@ func TestCreateWebhook_NonOKResponse(t *testing.T) {
 }
 
 func TestCreateWebhook_WebhookCreated(t *testing.T) {
+	t.Parallel()
 	expected := onfido.WebhookRef{
 		ID:           "fcb73186-0733-4f6f-9c57-d9d5ef979443",
 		URL:          "https://webhookendpoint.url",
@@ -77,6 +79,7 @@ func TestCreateWebhook_WebhookCreated(t *testing.T) {
 }
 
 func TestListWebhooks_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -97,6 +100,7 @@ func TestListWebhooks_NonOKResponse(t *testing.T) {
 }
 
 func TestListWebhooks_WebhooksRetrieved(t *testing.T) {
+	t.Parallel()
 	expected := onfido.WebhookRef{
 		ID:           "fcb73186-0733-4f6f-9c57-d9d5ef979443",
 		URL:          "https://webhookendpoint.url",

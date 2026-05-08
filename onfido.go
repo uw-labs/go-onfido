@@ -35,7 +35,7 @@ type HTTPRequester interface {
 
 // Error represents an Onfido API error response
 type Error struct {
-	Resp *http.Response
+	Resp *http.Response `json:"-"`
 	// see https://documentation.onfido.com/#error-object
 	Err struct {
 		ID     string      `json:"id"`
@@ -45,7 +45,7 @@ type Error struct {
 	} `json:"error"`
 }
 
-// known shapes of the values are []string and map[string][]string for recursive field validation
+// ErrorFields known shapes of the values are []string and map[string][]string for recursive field validation
 type ErrorFields map[string]interface{}
 
 func (e *Error) Error() string {
@@ -91,7 +91,7 @@ func NewClient(token string) *Client {
 	}
 }
 
-func (c *Client) newRequest(method, uri string, body io.Reader) (*http.Request, error) {
+func (c *Client) newRequest(ctx context.Context, method, uri string, body io.Reader) (*http.Request, error) {
 	if !strings.HasPrefix(uri, "http") {
 		if !strings.HasPrefix(uri, "/") {
 			uri = "/" + uri
@@ -99,7 +99,7 @@ func (c *Client) newRequest(method, uri string, body io.Reader) (*http.Request, 
 		uri = c.Endpoint + uri
 	}
 
-	req, err := http.NewRequest(method, uri, body)
+	req, err := http.NewRequestWithContext(ctx, method, uri, body)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +115,6 @@ func (c *Client) newRequest(method, uri string, body io.Reader) (*http.Request, 
 }
 
 func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) (*http.Response, error) {
-	req = req.WithContext(ctx)
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		select {
@@ -126,7 +125,7 @@ func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) (*htt
 		}
 	}
 	if resp.Body != nil {
-		defer resp.Body.Close()
+		defer resp.Body.Close() //nolint:errcheck
 	}
 
 	if c := resp.StatusCode; c < 200 || c > 299 {
@@ -153,7 +152,7 @@ func isJSONResponse(resp *http.Response) bool {
 func handleResponseErr(resp *http.Response) error {
 	var onfidoErr Error
 	if resp.Body != nil && isJSONResponse(resp) {
-		defer resp.Body.Close()
+		defer resp.Body.Close() //nolint:errcheck
 		if err := json.NewDecoder(resp.Body).Decode(&onfidoErr); err != nil {
 			return err
 		}
@@ -189,7 +188,7 @@ func (it *iter) Next(ctx context.Context) bool {
 		return false
 	}
 	if len(it.values) == 0 && it.nextURL != "" {
-		req, err := it.c.newRequest("GET", it.nextURL, nil)
+		req, err := it.c.newRequest(ctx, "GET", it.nextURL, nil)
 		if err != nil {
 			it.err = err
 			return false

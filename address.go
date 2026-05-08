@@ -40,7 +40,8 @@ type PickerIter struct {
 
 // Address returns the current address on the iterator.
 func (i *PickerIter) Address() *Address {
-	return i.Current().(*Address)
+	v, _ := i.Current().(*Address)
+	return v
 }
 
 // PickAddresses retrieves the list of addresses matched against the provided postcode.

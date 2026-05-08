@@ -14,6 +14,7 @@ import (
 )
 
 func TestLivePhotos_List(t *testing.T) {
+	t.Parallel()
 	applicantID := "541d040b-89f8-444b-8921-16b1333bf1c6"
 	createdAt := time.Now()
 

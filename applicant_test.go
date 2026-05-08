@@ -13,6 +13,7 @@ import (
 )
 
 func TestCreateApplicant_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -30,6 +31,7 @@ func TestCreateApplicant_NonOKResponse(t *testing.T) {
 }
 
 func TestCreateApplicant_ApplicantCreated(t *testing.T) {
+	t.Parallel()
 	expected := onfido.Applicant{
 		ID:        "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Title:     "Mr",
@@ -91,6 +93,7 @@ func TestCreateApplicant_ApplicantCreated(t *testing.T) {
 }
 
 func TestCreateApplicant_WithV36RequiredFields(t *testing.T) {
+	t.Parallel()
 	// Test specifically for v3.6 required fields: Location and Consents for US applicants
 	expected := onfido.Applicant{
 		ID:        "v36-test-id",
@@ -168,6 +171,7 @@ func TestCreateApplicant_WithV36RequiredFields(t *testing.T) {
 }
 
 func TestCreateApplicant_LocationValidation(t *testing.T) {
+	t.Parallel()
 	// Test that Location field is properly handled in v3.6
 	expected := onfido.Applicant{
 		ID:        "test-location-123",
@@ -215,6 +219,7 @@ func TestCreateApplicant_LocationValidation(t *testing.T) {
 }
 
 func TestDeleteApplicant_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	expected := "65643"
 
 	m := mux.NewRouter()
@@ -238,6 +243,7 @@ func TestDeleteApplicant_NonOKResponse(t *testing.T) {
 }
 
 func TestDeleteApplicant_ValidRequest(t *testing.T) {
+	t.Parallel()
 	expected := "65643"
 
 	m := mux.NewRouter()
@@ -261,6 +267,7 @@ func TestDeleteApplicant_ValidRequest(t *testing.T) {
 }
 
 func TestGetApplicant_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	m := mux.NewRouter()
 	m.HandleFunc("/applicants/{id}", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusGatewayTimeout)
@@ -278,6 +285,7 @@ func TestGetApplicant_NonOKResponse(t *testing.T) {
 }
 
 func TestGetApplicant_ValidRequest(t *testing.T) {
+	t.Parallel()
 	expected := onfido.Applicant{
 		ID:        "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Title:     "Mr",
@@ -349,6 +357,7 @@ func TestGetApplicant_ValidRequest(t *testing.T) {
 }
 
 func TestListApplicants_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		_, wErr := w.Write([]byte("{\"error\": \"things went bad\"}"))
@@ -369,6 +378,7 @@ func TestListApplicants_NonOKResponse(t *testing.T) {
 }
 
 func TestListApplicants_ApplicantsRetrieved(t *testing.T) {
+	t.Parallel()
 	expected := onfido.Applicant{
 		ID:        "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Title:     "Mr",
@@ -408,6 +418,7 @@ func TestListApplicants_ApplicantsRetrieved(t *testing.T) {
 }
 
 func TestUpdateApplicant_IDNotSet(t *testing.T) {
+	t.Parallel()
 	m := mux.NewRouter()
 	m.HandleFunc("/applicants/{id}", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -425,6 +436,7 @@ func TestUpdateApplicant_IDNotSet(t *testing.T) {
 }
 
 func TestUpdateApplicant_NonOKResponse(t *testing.T) {
+	t.Parallel()
 	m := mux.NewRouter()
 	m.HandleFunc("/applicants/{id}", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusGatewayTimeout)
@@ -442,6 +454,7 @@ func TestUpdateApplicant_NonOKResponse(t *testing.T) {
 }
 
 func TestUpdateApplicant_ValidRequest(t *testing.T) {
+	t.Parallel()
 	expected := onfido.Applicant{
 		ID:        "ce62d838-56f8-4ea5-98be-e7166d1dc33d",
 		Title:     "Mr",
